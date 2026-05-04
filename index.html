@@ -285,6 +285,26 @@
       letter-spacing: 0.04em;
     }
 
+    /* ── Loading skeleton ── */
+    .skeleton {
+      background: linear-gradient(90deg, var(--surface) 25%, var(--border) 50%, var(--surface) 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.4s infinite;
+      border-radius: 2px;
+      aspect-ratio: 1 / 1;
+    }
+
+    @keyframes shimmer {
+      0%   { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    .load-error {
+      color: var(--muted);
+      font-size: 0.85rem;
+      padding: 2rem 0;
+    }
+
     /* ── Responsive ── */
     @media (max-width: 600px) {
       nav { display: none; }
@@ -343,136 +363,123 @@
   </div>
 
   <script>
-    // ── Image lists ──
-    const featured = [
-      "Featured/IMG_2356.jpeg",
-      "Featured/IMG_2357.jpeg",
-      "Featured/IMG_2393.jpeg",
-      "Featured/IMG_2463.jpeg",
-    ];
+    // ── GitHub config ──
+    const GITHUB_USER   = 'SNLabat';
+    const GITHUB_REPO   = 'LaurieBarake';
+    const GITHUB_BRANCH = 'main';
+    const IMAGE_EXTS    = new Set(['jpg', 'jpeg', 'png', 'gif', 'webp', 'avif']);
 
-    const gallery = [
-      "Gallery/IMG_2356.jpeg",
-      "Gallery/IMG_2357.jpeg",
-      "Gallery/IMG_2364.jpeg",
-      "Gallery/IMG_2365.jpeg",
-      "Gallery/IMG_2366.jpeg",
-      "Gallery/IMG_2368.jpeg",
-      "Gallery/IMG_2369.jpeg",
-      "Gallery/IMG_2370.jpeg",
-      "Gallery/IMG_2371.jpeg",
-      "Gallery/IMG_2379.jpeg",
-      "Gallery/IMG_2380.jpeg",
-      "Gallery/IMG_2381.jpeg",
-      "Gallery/IMG_2382.jpeg",
-      "Gallery/IMG_2383.png",
-      "Gallery/IMG_2384.png",
-      "Gallery/IMG_2388.png",
-      "Gallery/IMG_2393.jpeg",
-      "Gallery/IMG_2406.png",
-      "Gallery/IMG_2428.png",
-      "Gallery/IMG_2429.png",
-      "Gallery/IMG_2430.png",
-      "Gallery/IMG_2431.png",
-      "Gallery/IMG_2432.png",
-      "Gallery/IMG_2434.jpeg",
-      "Gallery/IMG_2437.png",
-      "Gallery/IMG_2438.jpeg",
-      "Gallery/IMG_2440.jpeg",
-      "Gallery/IMG_2442.jpeg",
-      "Gallery/IMG_2443.jpeg",
-      "Gallery/IMG_2444.jpeg",
-      "Gallery/IMG_2446.jpeg",
-      "Gallery/IMG_2447.jpeg",
-      "Gallery/IMG_2450.jpeg",
-      "Gallery/IMG_2451.jpeg",
-      "Gallery/IMG_2453.jpeg",
-      "Gallery/IMG_2457.jpeg",
-      "Gallery/IMG_2458.jpeg",
-      "Gallery/IMG_2462.jpeg",
-      "Gallery/IMG_2463.jpeg",
-      "Gallery/IMG_2464.jpeg",
-      "Gallery/IMG_2465.jpeg",
-      "Gallery/IMG_2466.jpeg",
-      "Gallery/IMG_2467.jpeg",
-      "Gallery/IMG_2469.jpeg",
-      "Gallery/IMG_2470.jpeg",
-      "Gallery/IMG_2471.jpeg",
-      "Gallery/IMG_2472.jpeg",
-      "Gallery/IMG_2477.jpeg",
-      "Gallery/IMG_2479.jpeg",
-      "Gallery/IMG_2480.jpeg",
-      "Gallery/IMG_2481.jpeg",
-      "Gallery/IMG_2482.jpeg",
-      "Gallery/IMG_2483.jpeg",
-      "Gallery/IMG_2485.jpeg",
-      "Gallery/IMG_2486.jpeg",
-      "Gallery/IMG_2492.jpeg",
-    ];
+    function isImage(name) {
+      return IMAGE_EXTS.has(name.split('.').pop().toLowerCase());
+    }
 
-    // ── Render featured ──
-    const fgrid = document.getElementById("featured-grid");
-    featured.forEach((src, i) => {
-      const card = document.createElement("div");
-      card.className = "featured-card";
-      card.innerHTML = `
-        <img src="${src}" alt="Featured artwork ${i + 1}" loading="lazy" />
-        <div class="overlay"></div>
-      `;
-      card.addEventListener("click", () => openLightbox(gallery, i, featured));
-      fgrid.appendChild(card);
-    });
+    async function fetchFolder(folder) {
+      const url = `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${folder}?ref=${GITHUB_BRANCH}`;
+      const res = await fetch(url, { headers: { Accept: 'application/vnd.github.v3+json' } });
+      if (!res.ok) throw new Error(`GitHub API error ${res.status} for ${folder}`);
+      const files = await res.json();
+      return files
+        .filter(f => f.type === 'file' && isImage(f.name))
+        .sort((a, b) => a.name.localeCompare(b.name))
+        .map(f => f.download_url);
+    }
 
-    // ── Render gallery ──
-    const ggrid = document.getElementById("gallery-grid");
-    gallery.forEach((src, i) => {
-      const item = document.createElement("div");
-      item.className = "gallery-item";
-      item.innerHTML = `<img src="${src}" alt="Gallery artwork ${i + 1}" loading="lazy" />`;
-      item.addEventListener("click", () => openLightbox(gallery, i));
-      ggrid.appendChild(item);
-    });
-
-    // ── Lightbox ──
-    const lb = document.getElementById("lightbox");
-    const lbImg = document.getElementById("lb-img");
+    // ── Lightbox state ──
+    const lb    = document.getElementById('lightbox');
+    const lbImg = document.getElementById('lb-img');
     let lbImages = [];
-    let lbIndex = 0;
+    let lbIndex  = 0;
 
-    function openLightbox(images, index, alt) {
+    function openLightbox(images, index) {
       lbImages = images;
-      lbIndex = index;
+      lbIndex  = index;
       lbImg.src = images[index];
-      lb.classList.add("open");
-      document.body.style.overflow = "hidden";
+      lb.classList.add('open');
+      document.body.style.overflow = 'hidden';
     }
 
     function closeLightbox() {
-      lb.classList.remove("open");
-      document.body.style.overflow = "";
-      lbImg.src = "";
+      lb.classList.remove('open');
+      document.body.style.overflow = '';
+      lbImg.src = '';
     }
 
     function navigate(dir) {
       lbIndex = (lbIndex + dir + lbImages.length) % lbImages.length;
-      lbImg.src = "";
+      lbImg.src = '';
       setTimeout(() => { lbImg.src = lbImages[lbIndex]; }, 30);
     }
 
-    document.querySelector(".lb-close").addEventListener("click", closeLightbox);
-    document.querySelector(".lb-prev").addEventListener("click", (e) => { e.stopPropagation(); navigate(-1); });
-    document.querySelector(".lb-next").addEventListener("click", (e) => { e.stopPropagation(); navigate(1); });
-
-    lb.addEventListener("click", (e) => {
-      if (e.target === lb) closeLightbox();
+    document.querySelector('.lb-close').addEventListener('click', closeLightbox);
+    document.querySelector('.lb-prev').addEventListener('click', e => { e.stopPropagation(); navigate(-1); });
+    document.querySelector('.lb-next').addEventListener('click', e => { e.stopPropagation(); navigate(1); });
+    lb.addEventListener('click', e => { if (e.target === lb) closeLightbox(); });
+    document.addEventListener('keydown', e => {
+      if (!lb.classList.contains('open')) return;
+      if (e.key === 'Escape')      closeLightbox();
+      if (e.key === 'ArrowLeft')   navigate(-1);
+      if (e.key === 'ArrowRight')  navigate(1);
     });
 
-    document.addEventListener("keydown", (e) => {
-      if (!lb.classList.contains("open")) return;
-      if (e.key === "Escape") closeLightbox();
-      if (e.key === "ArrowLeft") navigate(-1);
-      if (e.key === "ArrowRight") navigate(1);
-    });
+    // ── Render helpers ──
+    function showSkeletons(grid, count) {
+      for (let i = 0; i < count; i++) {
+        const el = document.createElement('div');
+        el.className = 'skeleton';
+        grid.appendChild(el);
+      }
+    }
+
+    function renderFeatured(images) {
+      const grid = document.getElementById('featured-grid');
+      grid.innerHTML = '';
+      if (!images.length) {
+        grid.innerHTML = '<p class="load-error">No featured images found.</p>';
+        return;
+      }
+      images.forEach((src, i) => {
+        const card = document.createElement('div');
+        card.className = 'featured-card';
+        card.innerHTML = `<img src="${src}" alt="Featured artwork ${i + 1}" loading="lazy" /><div class="overlay"></div>`;
+        card.addEventListener('click', () => openLightbox(images, i));
+        grid.appendChild(card);
+      });
+    }
+
+    function renderGallery(images) {
+      const grid = document.getElementById('gallery-grid');
+      grid.innerHTML = '';
+      if (!images.length) {
+        grid.innerHTML = '<p class="load-error">No gallery images found.</p>';
+        return;
+      }
+      images.forEach((src, i) => {
+        const item = document.createElement('div');
+        item.className = 'gallery-item';
+        item.innerHTML = `<img src="${src}" alt="Gallery artwork ${i + 1}" loading="lazy" />`;
+        item.addEventListener('click', () => openLightbox(images, i));
+        grid.appendChild(item);
+      });
+    }
+
+    // ── Bootstrap ──
+    (async () => {
+      showSkeletons(document.getElementById('featured-grid'), 4);
+      showSkeletons(document.getElementById('gallery-grid'), 12);
+
+      try {
+        const [featuredImgs, galleryImgs] = await Promise.all([
+          fetchFolder('Featured'),
+          fetchFolder('Gallery'),
+        ]);
+        renderFeatured(featuredImgs);
+        renderGallery(galleryImgs);
+      } catch (err) {
+        console.error(err);
+        document.getElementById('featured-grid').innerHTML = '<p class="load-error">Could not load images. Check the repository is public.</p>';
+        document.getElementById('gallery-grid').innerHTML  = '<p class="load-error">Could not load images. Check the repository is public.</p>';
+      }
+    })();
   </script>
 
 </body>
