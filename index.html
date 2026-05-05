@@ -3,20 +3,33 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Laurie Barake — Watercolor Artist</title>
+  <title>Laurie Barake &mdash; Fine Art</title>
+  <meta name="description" content="Original watercolor and mixed media works by Laurie Barake. Capturing life, color and character through brush and watercolor." />
+
+  <!-- Favicon (uses the LB monogram) -->
+  <link rel="icon" type="image/jpeg" href="Inspiration%20%26%20Assets/Logo.jpeg" />
+  <link rel="apple-touch-icon" href="Inspiration%20%26%20Assets/Logo.jpeg" />
+
+  <!-- Fonts: Cormorant Garamond for display, Mulish as a free Avenir alternative for body -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Inter:wght@300;400&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Mulish:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+    /* ── Brand tokens (pulled from the inspiration palette) ── */
     :root {
-      --bg: #faf9f7;
-      --surface: #f4f2ee;
-      --border: #e8e4dd;
-      --text: #2a2620;
-      --muted: #8c8580;
-      --accent: #6b5e52;
+      --bg:           #f5f1e8;   /* warm ivory */
+      --bg-alt:       #ede6d6;   /* deeper cream */
+      --surface:      #e8e1cf;   /* paper / sand */
+      --border:       #ddd3bd;   /* warm taupe */
+      --text:         #2c2820;   /* charcoal */
+      --muted:        #837a68;   /* warm gray */
+      --accent:       #7c8470;   /* sage / olive (logo color) */
+      --accent-deep:  #5c624f;   /* deep olive */
+      --accent-warm:  #c0805e;   /* terracotta */
+      --accent-blue:  #5e7d7e;   /* sea glass */
     }
 
     html { scroll-behavior: smooth; }
@@ -24,9 +37,11 @@
     body {
       background: var(--bg);
       color: var(--text);
-      font-family: 'Inter', sans-serif;
-      font-weight: 300;
-      line-height: 1.6;
+      font-family: 'Mulish', 'Avenir', 'Helvetica Neue', sans-serif;
+      font-weight: 400;
+      line-height: 1.65;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
     }
 
     /* ── Header ── */
@@ -34,85 +49,174 @@
       position: sticky;
       top: 0;
       z-index: 100;
-      background: var(--bg);
+      background: rgba(245, 241, 232, 0.92);
+      backdrop-filter: saturate(140%) blur(10px);
+      -webkit-backdrop-filter: saturate(140%) blur(10px);
       border-bottom: 1px solid var(--border);
       padding: 0 clamp(1.5rem, 5vw, 4rem);
-      height: 64px;
+      height: 76px;
       display: flex;
       align-items: center;
       justify-content: space-between;
     }
 
-    .logo {
-      font-family: 'Cormorant Garamond', serif;
-      font-weight: 400;
-      font-size: 1.35rem;
-      letter-spacing: 0.04em;
-      color: var(--text);
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
       text-decoration: none;
+      color: var(--text);
+    }
+
+    .brand-mark {
+      height: 44px;
+      width: auto;
+      display: block;
+      /* multiply blends the cream JPEG background with the site bg */
+      mix-blend-mode: multiply;
+    }
+
+    .brand-name {
+      display: flex;
+      flex-direction: column;
+      line-height: 1;
+    }
+
+    .brand-name .name {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 500;
+      font-size: 1.35rem;
+      letter-spacing: 0.02em;
+      color: var(--text);
+    }
+
+    .brand-name .tag {
+      font-family: 'Mulish', sans-serif;
+      font-weight: 500;
+      font-size: 0.62rem;
+      letter-spacing: 0.32em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-top: 0.35rem;
     }
 
     nav {
       display: flex;
-      gap: 2.5rem;
+      gap: 2.25rem;
     }
 
     nav a {
-      font-size: 0.78rem;
-      letter-spacing: 0.12em;
+      font-size: 0.74rem;
+      font-weight: 600;
+      letter-spacing: 0.22em;
       text-transform: uppercase;
       color: var(--muted);
       text-decoration: none;
       transition: color 0.2s;
     }
 
-    nav a:hover { color: var(--text); }
+    nav a:hover { color: var(--accent-deep); }
 
     /* ── Hero ── */
     .hero {
-      padding: clamp(4rem, 10vw, 7rem) clamp(1.5rem, 5vw, 4rem);
-      max-width: 640px;
+      padding: clamp(4.5rem, 11vw, 8rem) clamp(1.5rem, 5vw, 4rem) clamp(3rem, 7vw, 5rem);
+      max-width: 760px;
+    }
+
+    .hero .eyebrow {
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.32em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 1.5rem;
     }
 
     .hero h1 {
       font-family: 'Cormorant Garamond', serif;
       font-weight: 300;
-      font-size: clamp(2.8rem, 6vw, 4.5rem);
-      line-height: 1.1;
-      letter-spacing: -0.01em;
-      margin-bottom: 1.25rem;
+      font-size: clamp(2.8rem, 6.5vw, 5rem);
+      line-height: 1.05;
+      letter-spacing: -0.012em;
+      margin-bottom: 1.5rem;
+      color: var(--text);
     }
 
     .hero h1 em {
       font-style: italic;
+      font-weight: 400;
       color: var(--accent);
     }
 
     .hero p {
-      font-size: 1rem;
+      font-size: 1.05rem;
+      line-height: 1.7;
       color: var(--muted);
-      max-width: 420px;
+      max-width: 460px;
+      font-weight: 400;
+    }
+
+    .hero-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-top: 2.25rem;
+      padding: 0.85rem 1.6rem;
+      background: var(--accent-deep);
+      color: var(--bg);
+      font-family: 'Mulish', sans-serif;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      text-decoration: none;
+      border-radius: 2px;
+      transition: background 0.2s, transform 0.2s;
+    }
+
+    .hero-cta:hover {
+      background: var(--accent);
+      transform: translateY(-1px);
     }
 
     /* ── Section shared ── */
     section {
-      padding: clamp(3rem, 8vw, 5.5rem) clamp(1.5rem, 5vw, 4rem);
+      padding: clamp(3.5rem, 8vw, 6rem) clamp(1.5rem, 5vw, 4rem);
+    }
+
+    .section-head {
+      max-width: 760px;
+      margin-bottom: 3rem;
     }
 
     .section-label {
       font-size: 0.7rem;
-      letter-spacing: 0.2em;
+      font-weight: 600;
+      letter-spacing: 0.32em;
       text-transform: uppercase;
-      color: var(--muted);
-      margin-bottom: 0.5rem;
+      color: var(--accent);
+      margin-bottom: 0.75rem;
     }
 
     .section-title {
       font-family: 'Cormorant Garamond', serif;
       font-weight: 300;
-      font-size: clamp(1.6rem, 3.5vw, 2.4rem);
-      margin-bottom: 2.5rem;
+      font-size: clamp(1.8rem, 4vw, 2.75rem);
+      letter-spacing: -0.005em;
       color: var(--text);
+      line-height: 1.15;
+      margin-bottom: 0.85rem;
+    }
+
+    .section-title em {
+      font-style: italic;
+      color: var(--accent);
+    }
+
+    .section-sub {
+      font-size: 0.95rem;
+      color: var(--muted);
+      max-width: 520px;
     }
 
     /* ── Featured ── */
@@ -133,6 +237,7 @@
       border-radius: 2px;
       background: var(--surface);
       aspect-ratio: 1 / 1;
+      box-shadow: 0 1px 2px rgba(44, 40, 32, 0.04);
     }
 
     .featured-card img {
@@ -140,7 +245,7 @@
       height: 100%;
       object-fit: cover;
       display: block;
-      transition: transform 0.55s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 0.3s;
+      transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 0.3s;
     }
 
     .featured-card:hover img {
@@ -151,7 +256,7 @@
     .featured-card .overlay {
       position: absolute;
       inset: 0;
-      background: linear-gradient(to top, rgba(30,25,20,0.45) 0%, transparent 50%);
+      background: linear-gradient(to top, rgba(44, 40, 32, 0.5) 0%, transparent 55%);
       opacity: 0;
       transition: opacity 0.3s;
       display: flex;
@@ -172,7 +277,7 @@
     /* ── Gallery ── */
     #gallery {
       border-top: 1px solid var(--border);
-      background: var(--surface);
+      background: var(--bg-alt);
     }
 
     .gallery-grid {
@@ -185,8 +290,9 @@
       cursor: pointer;
       overflow: hidden;
       border-radius: 2px;
-      background: var(--border);
+      background: var(--surface);
       aspect-ratio: 1 / 1;
+      box-shadow: 0 1px 2px rgba(44, 40, 32, 0.04);
     }
 
     .gallery-item img {
@@ -199,7 +305,7 @@
 
     .gallery-item:hover img {
       transform: scale(1.06);
-      opacity: 0.88;
+      opacity: 0.9;
     }
 
     /* ── Lightbox ── */
@@ -208,7 +314,7 @@
       position: fixed;
       inset: 0;
       z-index: 1000;
-      background: rgba(20, 17, 14, 0.93);
+      background: rgba(28, 25, 19, 0.94);
       align-items: center;
       justify-content: center;
       flex-direction: column;
@@ -223,7 +329,7 @@
       max-height: 85vh;
       object-fit: contain;
       border-radius: 2px;
-      box-shadow: 0 32px 80px rgba(0,0,0,0.5);
+      box-shadow: 0 32px 80px rgba(0, 0, 0, 0.55);
       cursor: default;
     }
 
@@ -232,13 +338,13 @@
       top: 1.25rem;
       right: 1.5rem;
       font-size: 1.5rem;
-      color: rgba(255,255,255,0.6);
+      color: rgba(255, 255, 255, 0.65);
       cursor: pointer;
       background: none;
       border: none;
       line-height: 1;
       transition: color 0.2s;
-      font-family: 'Inter', sans-serif;
+      font-family: 'Mulish', sans-serif;
       font-weight: 300;
     }
 
@@ -249,7 +355,7 @@
       top: 50%;
       transform: translateY(-50%);
       font-size: 1.6rem;
-      color: rgba(255,255,255,0.5);
+      color: rgba(255, 255, 255, 0.55);
       background: none;
       border: none;
       cursor: pointer;
@@ -258,31 +364,47 @@
       user-select: none;
     }
 
-    .lb-nav:hover { color: rgba(255,255,255,0.9); }
+    .lb-nav:hover { color: rgba(255, 255, 255, 0.95); }
     .lb-prev { left: 0.5rem; }
     .lb-next { right: 0.5rem; }
 
     /* ── Footer ── */
     footer {
       border-top: 1px solid var(--border);
-      padding: 2.5rem clamp(1.5rem, 5vw, 4rem);
+      padding: clamp(2.5rem, 5vw, 3.5rem) clamp(1.5rem, 5vw, 4rem);
       display: flex;
       justify-content: space-between;
       align-items: center;
       flex-wrap: wrap;
-      gap: 1rem;
+      gap: 1.25rem;
+      background: var(--bg);
+    }
+
+    .footer-brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .footer-brand img {
+      height: 36px;
+      width: auto;
+      mix-blend-mode: multiply;
     }
 
     .footer-name {
       font-family: 'Cormorant Garamond', serif;
-      font-size: 1rem;
-      color: var(--muted);
+      font-size: 1.1rem;
+      font-weight: 500;
+      color: var(--text);
     }
 
     .footer-copy {
-      font-size: 0.75rem;
+      font-size: 0.72rem;
       color: var(--muted);
-      letter-spacing: 0.04em;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      font-weight: 500;
     }
 
     /* ── Loading skeleton ── */
@@ -301,13 +423,21 @@
 
     .load-error {
       color: var(--muted);
-      font-size: 0.85rem;
+      font-size: 0.9rem;
       padding: 2rem 0;
+      grid-column: 1 / -1;
     }
 
     /* ── Responsive ── */
+    @media (max-width: 720px) {
+      header { height: 68px; }
+      .brand-mark { height: 38px; }
+      .brand-name .tag { display: none; }
+      nav { gap: 1.4rem; }
+      nav a { font-size: 0.68rem; letter-spacing: 0.18em; }
+    }
+
     @media (max-width: 600px) {
-      nav { display: none; }
       .featured-grid { grid-template-columns: 1fr 1fr; gap: 0.75rem; }
       .gallery-grid { grid-template-columns: 1fr 1fr 1fr; gap: 0.5rem; }
     }
@@ -317,7 +447,13 @@
 
   <!-- Header -->
   <header>
-    <a href="#" class="logo">Laurie Barake</a>
+    <a href="#" class="brand" aria-label="Laurie Barake — Fine Art">
+      <img src="Inspiration%20%26%20Assets/Logo.jpeg" alt="" class="brand-mark" />
+      <span class="brand-name">
+        <span class="name">Laurie Barake</span>
+        <span class="tag">Fine Art</span>
+      </span>
+    </a>
     <nav>
       <a href="#featured">Featured</a>
       <a href="#gallery">Gallery</a>
@@ -326,14 +462,19 @@
 
   <!-- Hero -->
   <div class="hero">
-    <h1>Painting the world<br/>in <em>watercolor</em></h1>
-    <p>Original watercolor works by Laurie Barake — exploring color, light, and the quiet beauty of everyday moments.</p>
+    <p class="eyebrow">Watercolor &middot; Oil &middot; Mixed Media</p>
+    <h1>Stories in every<br/><em>brushstroke</em></h1>
+    <p>Capturing life, color and character through brush and watercolor. Original works by Laurie Barake, inspired by people, places and quiet moments.</p>
+    <a href="#gallery" class="hero-cta">View Gallery &rarr;</a>
   </div>
 
   <!-- Featured Works -->
   <section id="featured">
-    <p class="section-label">Selected works</p>
-    <h2 class="section-title">Featured</h2>
+    <div class="section-head">
+      <p class="section-label">Selected Works</p>
+      <h2 class="section-title"><em>Featured</em> pieces</h2>
+      <p class="section-sub">A curated selection of recent paintings, drawn from people, places and moments worth remembering.</p>
+    </div>
     <div class="featured-grid" id="featured-grid">
       <!-- injected by JS -->
     </div>
@@ -341,8 +482,11 @@
 
   <!-- Full Gallery -->
   <section id="gallery">
-    <p class="section-label">All works</p>
-    <h2 class="section-title">Gallery</h2>
+    <div class="section-head">
+      <p class="section-label">Browse the Gallery</p>
+      <h2 class="section-title">The full <em>collection</em></h2>
+      <p class="section-sub">Landscapes, cityscapes, portraits and still life, all rendered in watercolor and mixed media.</p>
+    </div>
     <div class="gallery-grid" id="gallery-grid">
       <!-- injected by JS -->
     </div>
@@ -350,8 +494,11 @@
 
   <!-- Footer -->
   <footer>
-    <span class="footer-name">Laurie Barake</span>
-    <span class="footer-copy">Watercolor Artist &nbsp;&middot;&nbsp; All rights reserved</span>
+    <div class="footer-brand">
+      <img src="Inspiration%20%26%20Assets/Logo.jpeg" alt="" />
+      <span class="footer-name">Laurie Barake</span>
+    </div>
+    <span class="footer-copy">Fine Art &nbsp;&middot;&nbsp; All Rights Reserved</span>
   </footer>
 
   <!-- Lightbox -->
