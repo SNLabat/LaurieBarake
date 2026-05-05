@@ -119,8 +119,48 @@
 
     /* ── Hero ── */
     .hero {
-      padding: clamp(4.5rem, 11vw, 8rem) clamp(1.5rem, 5vw, 4rem) clamp(3rem, 7vw, 5rem);
-      max-width: 760px;
+      position: relative;
+      min-height: clamp(560px, 78vh, 820px);
+      display: flex;
+      align-items: center;
+      padding: clamp(4.5rem, 10vw, 8rem) clamp(1.5rem, 5vw, 4rem);
+      overflow: hidden;
+      isolation: isolate;
+      background: var(--bg-alt);
+      border-bottom: 1px solid var(--border);
+    }
+
+    /* Background painting */
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: url('Hero/IMG_2463.jpeg');
+      background-size: cover;
+      background-position: center right;
+      background-repeat: no-repeat;
+      z-index: -2;
+    }
+
+    /* Subtle dark gradient — heavier on the left so the copy stays readable */
+    .hero::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(
+          100deg,
+          rgba(20, 18, 14, 0.82) 0%,
+          rgba(28, 25, 19, 0.55) 38%,
+          rgba(28, 25, 19, 0.25) 65%,
+          rgba(28, 25, 19, 0.10) 100%
+        );
+      z-index: -1;
+    }
+
+    .hero-content {
+      max-width: 640px;
+      color: #f5f1e8;
     }
 
     .hero .eyebrow {
@@ -128,7 +168,7 @@
       font-weight: 600;
       letter-spacing: 0.32em;
       text-transform: uppercase;
-      color: var(--accent);
+      color: rgba(245, 241, 232, 0.85);
       margin-bottom: 1.5rem;
     }
 
@@ -139,21 +179,23 @@
       line-height: 1.05;
       letter-spacing: -0.012em;
       margin-bottom: 1.5rem;
-      color: var(--text);
+      color: #faf6ec;
+      text-shadow: 0 2px 24px rgba(0, 0, 0, 0.35);
     }
 
     .hero h1 em {
       font-style: italic;
       font-weight: 400;
-      color: var(--accent);
+      color: #e8dfc5;
     }
 
     .hero p {
       font-size: 1.05rem;
       line-height: 1.7;
-      color: var(--muted);
+      color: rgba(245, 241, 232, 0.88);
       max-width: 460px;
       font-weight: 400;
+      text-shadow: 0 1px 12px rgba(0, 0, 0, 0.3);
     }
 
     .hero-cta {
@@ -161,9 +203,9 @@
       align-items: center;
       gap: 0.5rem;
       margin-top: 2.25rem;
-      padding: 0.85rem 1.6rem;
-      background: var(--accent-deep);
-      color: var(--bg);
+      padding: 0.9rem 1.7rem;
+      background: var(--bg);
+      color: var(--text);
       font-family: 'Mulish', sans-serif;
       font-size: 0.72rem;
       font-weight: 600;
@@ -171,11 +213,13 @@
       text-transform: uppercase;
       text-decoration: none;
       border-radius: 2px;
-      transition: background 0.2s, transform 0.2s;
+      transition: background 0.2s, color 0.2s, transform 0.2s;
+      box-shadow: 0 6px 24px rgba(0, 0, 0, 0.25);
     }
 
     .hero-cta:hover {
       background: var(--accent);
+      color: var(--bg);
       transform: translateY(-1px);
     }
 
@@ -440,6 +484,23 @@
     @media (max-width: 600px) {
       .featured-grid { grid-template-columns: 1fr 1fr; gap: 0.75rem; }
       .gallery-grid { grid-template-columns: 1fr 1fr 1fr; gap: 0.5rem; }
+
+      /* On mobile the text takes the whole width — darken the overlay more uniformly */
+      .hero {
+        min-height: clamp(520px, 88vh, 720px);
+      }
+      .hero::before {
+        background-position: center center;
+      }
+      .hero::after {
+        background:
+          linear-gradient(
+            180deg,
+            rgba(20, 18, 14, 0.45) 0%,
+            rgba(20, 18, 14, 0.65) 55%,
+            rgba(20, 18, 14, 0.78) 100%
+          );
+      }
     }
   </style>
 </head>
@@ -461,12 +522,14 @@
   </header>
 
   <!-- Hero -->
-  <div class="hero">
-    <p class="eyebrow">Watercolor &middot; Oil &middot; Mixed Media</p>
-    <h1>Stories in every<br/><em>brushstroke</em></h1>
-    <p>Capturing life, color and character through brush and watercolor. Original works by Laurie Barake, inspired by people, places and quiet moments.</p>
-    <a href="#gallery" class="hero-cta">View Gallery &rarr;</a>
-  </div>
+  <section class="hero" aria-label="Introduction">
+    <div class="hero-content">
+      <p class="eyebrow">Watercolor &middot; Oil &middot; Mixed Media</p>
+      <h1>Stories in every<br/><em>brushstroke</em></h1>
+      <p>Capturing life, color and character through brush and watercolor. Original works by Laurie Barake, inspired by people, places and quiet moments.</p>
+      <a href="#gallery" class="hero-cta">View Gallery &rarr;</a>
+    </div>
+  </section>
 
   <!-- Featured Works -->
   <section id="featured">
