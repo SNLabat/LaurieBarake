@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contact &mdash; Laurie Barake Fine Art</title>
+  <meta name="description" content="Get in touch with Laurie Barake for commissions, prints, and inquiries." />
+
+  <link rel="icon" type="image/jpeg" href="Inspiration%20%26%20Assets/Logo.jpeg" />
+  <link rel="apple-touch-icon" href="Inspiration%20%26%20Assets/Logo.jpeg" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Mulish:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:           #f5f1e8;
+      --bg-alt:       #ede6d6;
+      --surface:      #e8e1cf;
+      --border:       #ddd3bd;
+      --text:         #2c2820;
+      --muted:        #837a68;
+      --accent:       #7c8470;
+      --accent-deep:  #5c624f;
+      --accent-warm:  #c0805e;
+      --accent-blue:  #5e7d7e;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Mulish', 'Avenir', 'Helvetica Neue', sans-serif;
+      font-weight: 400;
+      line-height: 1.65;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* ── Header ── */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(245, 241, 232, 0.92);
+      backdrop-filter: saturate(140%) blur(10px);
+      -webkit-backdrop-filter: saturate(140%) blur(10px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 clamp(1.5rem, 5vw, 4rem);
+      height: 76px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+      text-decoration: none;
+      color: var(--text);
+    }
+
+    .brand-mark {
+      height: 44px;
+      width: auto;
+      display: block;
+      mix-blend-mode: multiply;
+    }
+
+    .brand-name {
+      display: flex;
+      flex-direction: column;
+      line-height: 1;
+    }
+
+    .brand-name .name {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 500;
+      font-size: 1.35rem;
+      letter-spacing: 0.02em;
+      color: var(--text);
+    }
+
+    .brand-name .tag {
+      font-family: 'Mulish', sans-serif;
+      font-weight: 500;
+      font-size: 0.62rem;
+      letter-spacing: 0.32em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-top: 0.35rem;
+    }
+
+    nav {
+      display: flex;
+      gap: 2.25rem;
+    }
+
+    nav a {
+      font-size: 0.74rem;
+      font-weight: 600;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--muted);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    nav a:hover { color: var(--accent-deep); }
+    nav a.active { color: var(--accent-deep); }
+
+    /* ── Page hero ── */
+    .page-hero {
+      background: var(--bg-alt);
+      border-bottom: 1px solid var(--border);
+      padding: clamp(3rem, 7vw, 5rem) clamp(1.5rem, 5vw, 4rem) clamp(2.5rem, 5vw, 3.5rem);
+    }
+
+    .page-hero .eyebrow {
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.32em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 1rem;
+    }
+
+    .page-hero h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 300;
+      font-size: clamp(2.4rem, 5vw, 3.8rem);
+      line-height: 1.08;
+      letter-spacing: -0.01em;
+      color: var(--text);
+    }
+
+    .page-hero h1 em {
+      font-style: italic;
+      color: var(--accent);
+    }
+
+    /* ── Contact content ── */
+    .contact-section {
+      padding: clamp(4rem, 10vw, 7rem) clamp(1.5rem, 5vw, 4rem);
+      text-align: center;
+    }
+
+    .contact-inner {
+      max-width: 560px;
+      margin: 0 auto;
+    }
+
+    .contact-inner p {
+      font-size: 1rem;
+      line-height: 1.8;
+      color: var(--muted);
+      margin-bottom: 2.5rem;
+    }
+
+    .contact-email {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(1.25rem, 3vw, 1.7rem);
+      font-weight: 400;
+      letter-spacing: 0.02em;
+      color: var(--accent-deep);
+      text-decoration: none;
+      border-bottom: 1px solid var(--accent);
+      padding-bottom: 0.15rem;
+      transition: color 0.2s, border-color 0.2s;
+    }
+
+    .contact-email:hover {
+      color: var(--accent-warm);
+      border-color: var(--accent-warm);
+    }
+
+    /* ── Footer ── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: clamp(2.5rem, 5vw, 3.5rem) clamp(1.5rem, 5vw, 4rem);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1.25rem;
+      background: var(--bg);
+    }
+
+    .footer-brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .footer-brand img {
+      height: 36px;
+      width: auto;
+      mix-blend-mode: multiply;
+    }
+
+    .footer-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.1rem;
+      font-weight: 500;
+      color: var(--text);
+    }
+
+    .footer-copy {
+      font-size: 0.72rem;
+      color: var(--muted);
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      font-weight: 500;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 720px) {
+      header { height: 68px; }
+      .brand-mark { height: 38px; }
+      .brand-name .tag { display: none; }
+      nav { gap: 1.4rem; }
+      nav a { font-size: 0.68rem; letter-spacing: 0.18em; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <a href="index.html" class="brand" aria-label="Laurie Barake — Fine Art">
+      <img src="Inspiration%20%26%20Assets/Logo.jpeg" alt="" class="brand-mark" />
+      <span class="brand-name">
+        <span class="name">Laurie Barake</span>
+        <span class="tag">Fine Art</span>
+      </span>
+    </a>
+    <nav>
+      <a href="index.html#featured">Featured</a>
+      <a href="index.html#gallery">Gallery</a>
+      <a href="about.html">About</a>
+      <a href="contact.html" class="active">Contact</a>
+    </nav>
+  </header>
+
+  <!-- Page Hero -->
+  <div class="page-hero">
+    <p class="eyebrow">Get in Touch</p>
+    <h1>Commission &amp; <em>Inquiries</em></h1>
+  </div>
+
+  <!-- Contact Content -->
+  <section class="contact-section">
+    <div class="contact-inner">
+      <p>Interested in a commission, a print, or simply want to say hello? Laurie would love to hear from you.</p>
+      <a href="mailto:art@lauriebarake.com" class="contact-email">art@lauriebarake.com</a>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-brand">
+      <img src="Inspiration%20%26%20Assets/Logo.jpeg" alt="" />
+      <span class="footer-name">Laurie Barake</span>
+    </div>
+    <span class="footer-copy">Fine Art &nbsp;&middot;&nbsp; All Rights Reserved</span>
+  </footer>
+
+</body>
+</html>
