@@ -514,6 +514,43 @@
       }
     }
 
+    /* ── Contact ── */
+    #contact {
+      border-top: 1px solid var(--border);
+      background: var(--bg-alt);
+      text-align: center;
+    }
+
+    .contact-inner {
+      max-width: 580px;
+      margin: 0 auto;
+    }
+
+    .contact-inner .section-sub {
+      max-width: 100%;
+      margin-bottom: 2.25rem;
+    }
+
+    .contact-email {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(1.2rem, 3vw, 1.65rem);
+      font-weight: 400;
+      letter-spacing: 0.02em;
+      color: var(--accent-deep);
+      text-decoration: none;
+      border-bottom: 1px solid var(--accent);
+      padding-bottom: 0.15rem;
+      transition: color 0.2s, border-color 0.2s;
+    }
+
+    .contact-email:hover {
+      color: var(--accent-warm);
+      border-color: var(--accent-warm);
+    }
+
     /* ── Loading skeleton ── */
     .skeleton {
       background: linear-gradient(90deg, var(--surface) 25%, var(--border) 50%, var(--surface) 75%);
@@ -582,6 +619,7 @@
       <a href="#featured">Featured</a>
       <a href="#gallery">Gallery</a>
       <a href="#about">About</a>
+      <a href="#contact">Contact</a>
     </nav>
   </header>
 
@@ -635,6 +673,16 @@
         <hr class="about-divider" />
         <p>Since taking up watercolor painting, Laurie has earned numerous awards and accolades, including multiple first-place ribbons and Best in Show honors at the 2024 New Iberia Sugarcane Festival. She was also juried into The Big Easel, Lafayette's annual outdoor fine art event held in River Ranch Town Square, where several of her paintings were sold. Her growing body of work continues to resonate with audiences who appreciate both her technical skill and her heartfelt portrayal of Cajun life and culture.</p>
       </div>
+    </div>
+  </section>
+
+  <!-- Contact -->
+  <section id="contact">
+    <div class="contact-inner">
+      <p class="section-label">Get in Touch</p>
+      <h2 class="section-title">Commission &amp; <em>Inquiries</em></h2>
+      <p class="section-sub">Interested in a commission, a print, or simply want to say hello? Laurie would love to hear from you.</p>
+      <a href="mailto:art@lauriebarake.com" class="contact-email">art@lauriebarake.com</a>
     </div>
   </section>
 
