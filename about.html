@@ -116,8 +116,8 @@
 
     /* ── Page hero ── */
     .page-hero {
-      background: var(--bg-alt);
-      border-bottom: 1px solid var(--border);
+      background: var(--accent);
+      border-bottom: 1px solid var(--accent-deep);
       padding: clamp(3rem, 7vw, 5rem) clamp(1.5rem, 5vw, 4rem) clamp(2.5rem, 5vw, 3.5rem);
     }
 
@@ -126,7 +126,7 @@
       font-weight: 600;
       letter-spacing: 0.32em;
       text-transform: uppercase;
-      color: var(--accent);
+      color: rgba(245, 241, 232, 0.75);
       margin-bottom: 1rem;
     }
 
@@ -136,12 +136,44 @@
       font-size: clamp(2.4rem, 5vw, 3.8rem);
       line-height: 1.08;
       letter-spacing: -0.01em;
-      color: var(--text);
+      color: #faf6ec;
     }
 
     .page-hero h1 em {
       font-style: italic;
-      color: var(--accent);
+      color: rgba(245, 241, 232, 0.85);
+    }
+
+    .page-hero-contact {
+      margin-top: 1.75rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid rgba(245, 241, 232, 0.2);
+    }
+
+    .page-hero-contact p {
+      font-size: 0.9rem;
+      color: rgba(245, 241, 232, 0.78);
+      margin-bottom: 0.6rem;
+    }
+
+    .page-hero-contact a {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(1.1rem, 2.5vw, 1.45rem);
+      font-weight: 400;
+      letter-spacing: 0.02em;
+      color: #faf6ec;
+      text-decoration: none;
+      border-bottom: 1px solid rgba(245, 241, 232, 0.45);
+      padding-bottom: 0.1rem;
+      transition: color 0.2s, border-color 0.2s;
+    }
+
+    .page-hero-contact a:hover {
+      color: #fff;
+      border-color: rgba(255, 255, 255, 0.7);
     }
 
     /* ── About content ── */
@@ -232,7 +264,67 @@
       font-weight: 500;
     }
 
+    /* ── Hamburger ── */
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      gap: 5px;
+      width: 36px;
+      height: 36px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 4px;
+      z-index: 200;
+    }
+
+    .hamburger span {
+      display: block;
+      width: 100%;
+      height: 2px;
+      background: var(--text);
+      border-radius: 2px;
+      transition: transform 0.25s, opacity 0.25s;
+      transform-origin: center;
+    }
+
+    .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .hamburger.open span:nth-child(2) { opacity: 0; }
+    .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
     /* ── Responsive ── */
+    @media (max-width: 640px) {
+      .hamburger { display: flex; }
+
+      nav {
+        display: none;
+        position: fixed;
+        top: 68px;
+        left: 0;
+        right: 0;
+        background: rgba(245, 241, 232, 0.98);
+        backdrop-filter: saturate(140%) blur(10px);
+        -webkit-backdrop-filter: saturate(140%) blur(10px);
+        border-bottom: 1px solid var(--border);
+        flex-direction: column;
+        align-items: center;
+        gap: 0;
+        padding: 1.5rem 0;
+        z-index: 150;
+      }
+
+      nav.open { display: flex; }
+
+      nav a {
+        font-size: 0.78rem;
+        letter-spacing: 0.22em;
+        padding: 0.75rem 2rem;
+        width: 100%;
+        text-align: center;
+      }
+    }
+
     @media (max-width: 760px) {
       .about-inner {
         grid-template-columns: 1fr;
@@ -246,8 +338,10 @@
       header { height: 68px; }
       .brand-mark { height: 38px; }
       .brand-name .tag { display: none; }
-      nav { gap: 1.4rem; }
-      nav a { font-size: 0.68rem; letter-spacing: 0.18em; }
+    }
+
+    @media (min-width: 641px) {
+      nav { gap: 2.25rem; }
     }
   </style>
 </head>
@@ -262,18 +356,24 @@
         <span class="tag">Fine Art</span>
       </span>
     </a>
-    <nav>
+    <nav id="main-nav">
       <a href="index.html#featured">Featured</a>
       <a href="index.html#gallery">Gallery</a>
       <a href="about.html" class="active">About</a>
-      <a href="contact.html">Contact</a>
     </nav>
+    <button class="hamburger" id="hamburger" aria-label="Toggle menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
   </header>
 
   <!-- Page Hero -->
   <div class="page-hero">
     <p class="eyebrow">The Artist</p>
     <h1>Laurie <em>Barake</em></h1>
+    <div class="page-hero-contact">
+      <p>Interested in learning more? Laurie would love to hear from you.</p>
+      <a href="mailto:art@lauriebarake.com">art@lauriebarake.com</a>
+    </div>
   </div>
 
   <!-- About Content -->
@@ -301,6 +401,23 @@
     </div>
     <span class="footer-copy">Fine Art &nbsp;&middot;&nbsp; All Rights Reserved</span>
   </footer>
+
+  <script>
+    const hamburger = document.getElementById('hamburger');
+    const mainNav   = document.getElementById('main-nav');
+    hamburger.addEventListener('click', () => {
+      const open = mainNav.classList.toggle('open');
+      hamburger.classList.toggle('open', open);
+      hamburger.setAttribute('aria-expanded', open);
+    });
+    mainNav.querySelectorAll('a').forEach(a => {
+      a.addEventListener('click', () => {
+        mainNav.classList.remove('open');
+        hamburger.classList.remove('open');
+        hamburger.setAttribute('aria-expanded', false);
+      });
+    });
+  </script>
 
 </body>
 </html>

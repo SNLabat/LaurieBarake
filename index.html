@@ -204,8 +204,8 @@
       gap: 0.5rem;
       margin-top: 2.25rem;
       padding: 0.9rem 1.7rem;
-      background: var(--bg);
-      color: var(--text);
+      background: var(--accent);
+      color: #fff;
       font-family: 'Mulish', sans-serif;
       font-size: 0.72rem;
       font-weight: 600;
@@ -218,8 +218,8 @@
     }
 
     .hero-cta:hover {
-      background: var(--accent);
-      color: var(--bg);
+      background: #fff;
+      color: var(--accent-deep);
       transform: translateY(-1px);
     }
 
@@ -472,13 +472,76 @@
       grid-column: 1 / -1;
     }
 
+    /* ── Hamburger ── */
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      gap: 5px;
+      width: 36px;
+      height: 36px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 4px;
+      z-index: 200;
+    }
+
+    .hamburger span {
+      display: block;
+      width: 100%;
+      height: 2px;
+      background: var(--text);
+      border-radius: 2px;
+      transition: transform 0.25s, opacity 0.25s;
+      transform-origin: center;
+    }
+
+    .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .hamburger.open span:nth-child(2) { opacity: 0; }
+    .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+    /* Mobile nav overlay */
+    @media (max-width: 640px) {
+      .hamburger { display: flex; }
+
+      nav {
+        display: none;
+        position: fixed;
+        top: 68px;
+        left: 0;
+        right: 0;
+        background: rgba(245, 241, 232, 0.98);
+        backdrop-filter: saturate(140%) blur(10px);
+        -webkit-backdrop-filter: saturate(140%) blur(10px);
+        border-bottom: 1px solid var(--border);
+        flex-direction: column;
+        align-items: center;
+        gap: 0;
+        padding: 1.5rem 0;
+        z-index: 150;
+      }
+
+      nav.open { display: flex; }
+
+      nav a {
+        font-size: 0.78rem;
+        letter-spacing: 0.22em;
+        padding: 0.75rem 2rem;
+        width: 100%;
+        text-align: center;
+      }
+    }
+
     /* ── Responsive ── */
     @media (max-width: 720px) {
       header { height: 68px; }
       .brand-mark { height: 38px; }
       .brand-name .tag { display: none; }
-      nav { gap: 1.4rem; }
-      nav a { font-size: 0.68rem; letter-spacing: 0.18em; }
+    }
+
+    @media (min-width: 641px) {
+      nav { gap: 2.25rem; }
     }
 
     @media (max-width: 600px) {
@@ -515,20 +578,22 @@
         <span class="tag">Fine Art</span>
       </span>
     </a>
-    <nav>
+    <nav id="main-nav">
       <a href="#featured">Featured</a>
       <a href="#gallery">Gallery</a>
       <a href="about.html">About</a>
-      <a href="contact.html">Contact</a>
     </nav>
+    <button class="hamburger" id="hamburger" aria-label="Toggle menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
   </header>
 
   <!-- Hero -->
   <section class="hero" aria-label="Introduction">
     <div class="hero-content">
       <p class="eyebrow">Watercolor &middot; Mixed Media</p>
-      <h1>Stories in every<br/><em>brushstroke</em></h1>
-      <p>Capturing life, color and character through brush and watercolor. Original works by Laurie Barake, inspired by people, places and quiet moments.</p>
+      <h1>Laurie Barake <em>Fine Art</em></h1>
+      <p>Capturing life, color and character through brush and watercolor. Original works inspired by people, places and quiet moments of South Louisiana.</p>
       <a href="#gallery" class="hero-cta">View Gallery &rarr;</a>
     </div>
   </section>
@@ -575,6 +640,23 @@
   </div>
 
   <script>
+    // ── Hamburger menu ──
+    const hamburger = document.getElementById('hamburger');
+    const mainNav   = document.getElementById('main-nav');
+    hamburger.addEventListener('click', () => {
+      const open = mainNav.classList.toggle('open');
+      hamburger.classList.toggle('open', open);
+      hamburger.setAttribute('aria-expanded', open);
+    });
+    // Close nav when a link is clicked (mobile)
+    mainNav.querySelectorAll('a').forEach(a => {
+      a.addEventListener('click', () => {
+        mainNav.classList.remove('open');
+        hamburger.classList.remove('open');
+        hamburger.setAttribute('aria-expanded', false);
+      });
+    });
+
     // ── GitHub config ──
     const GITHUB_USER   = 'SNLabat';
     const GITHUB_REPO   = 'LaurieBarake';
