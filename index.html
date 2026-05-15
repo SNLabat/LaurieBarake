@@ -164,14 +164,15 @@
     }
 
     .hero-artist-block {
-      display: inline-block;
+      display: block;
+      text-align: center;
       margin-bottom: 1.6rem;
     }
 
     .hero .hero-artist-name {
       font-family: 'Cormorant Garamond', serif;
       font-weight: 500;
-      font-size: 1.35rem;
+      font-size: clamp(1.8rem, 4vw, 2.4rem);
       letter-spacing: 0.02em;
       color: rgba(245, 241, 232, 0.95);
       margin-bottom: 0.35rem;
@@ -181,7 +182,7 @@
     .hero .hero-artist-tag {
       font-family: 'Mulish', sans-serif;
       font-weight: 500;
-      font-size: 0.62rem;
+      font-size: 0.85rem;
       letter-spacing: 0.32em;
       text-transform: uppercase;
       color: rgba(245, 241, 232, 0.7);
