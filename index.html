@@ -813,15 +813,19 @@
       if (e.key === 'ArrowRight')  navigate(1);
     });
 
-    // ── Painting catalog (name + price), in display order: ──
-    // Featured grid first (1–6), then Gallery grid continues (7–85)
-    const paintings = [
+    // ── Featured catalog (name + price), in display order ──
+    const featuredPaintings = [
       { name: "Catahoula Crawfish",            price: "$325" },
       { name: "The Crab",                      price: "$450" },
       { name: "The Turkey",                    price: "$300" },
       { name: "Fish on the Coral",             price: "$375" },
       { name: "St. John's Cathedral",          price: "$600" },
       { name: "Preservation Hall",             price: "$550" },
+      { name: "The Last Supper",               price: "$400" },
+    ];
+
+    // ── Gallery catalog (name + price), in display order ──
+    const galleryPaintings = [
       { name: "Church on the Mountain",        price: "$300" },
       { name: "Sweet Cane Burning",            price: "$300" },
       { name: "The Dock",                      price: "$275" },
@@ -925,16 +929,16 @@
         return;
       }
       images.forEach((src, i) => {
-        const p = paintings[i];
+        const p = featuredPaintings[i];
         const card = document.createElement('div');
         card.className = 'featured-card';
         card.innerHTML = `<img src="${src}" alt="${p ? p.name : `Featured artwork ${i + 1}`}" loading="lazy" />${overlayHTML(p)}`;
-        card.addEventListener('click', () => openLightbox(images, i, paintings.slice(0, images.length)));
+        card.addEventListener('click', () => openLightbox(images, i, featuredPaintings));
         grid.appendChild(card);
       });
     }
 
-    function renderGallery(images, featuredCount) {
+    function renderGallery(images) {
       const grid = document.getElementById('gallery-grid');
       grid.innerHTML = '';
       if (!images.length) {
@@ -942,11 +946,11 @@
         return;
       }
       images.forEach((src, i) => {
-        const p = paintings[featuredCount + i];
+        const p = galleryPaintings[i];
         const item = document.createElement('div');
         item.className = 'gallery-item';
         item.innerHTML = `<img src="${src}" alt="${p ? p.name : `Gallery artwork ${i + 1}`}" loading="lazy" />${overlayHTML(p)}`;
-        item.addEventListener('click', () => openLightbox(images, i, paintings.slice(featuredCount, featuredCount + images.length)));
+        item.addEventListener('click', () => openLightbox(images, i, galleryPaintings));
         grid.appendChild(item);
       });
     }
@@ -962,7 +966,7 @@
           fetchFolder('Gallery'),
         ]);
         renderFeatured(featuredImgs);
-        renderGallery(galleryImgs, featuredImgs.length);
+        renderGallery(galleryImgs);
       } catch (err) {
         console.error(err);
         document.getElementById('featured-grid').innerHTML = '<p class="load-error">Could not load images. Check the repository is public.</p>';
