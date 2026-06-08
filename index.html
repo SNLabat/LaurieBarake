@@ -339,6 +339,17 @@
       font-size: 1.05rem;
       color: #fff;
       letter-spacing: 0.02em;
+      display: block;
+    }
+
+    .overlay-price {
+      font-family: 'Mulish', 'Avenir', 'Helvetica Neue', sans-serif;
+      font-style: normal;
+      font-size: 0.8rem;
+      color: rgba(255, 255, 255, 0.85);
+      letter-spacing: 0.04em;
+      margin-top: 0.2rem;
+      display: block;
     }
 
     /* ── Gallery ── */
@@ -355,6 +366,7 @@
 
     .gallery-item {
       cursor: pointer;
+      position: relative;
       overflow: hidden;
       border-radius: 2px;
       background: var(--surface);
@@ -374,6 +386,22 @@
       transform: scale(1.06);
       opacity: 0.9;
     }
+
+    .gallery-item .overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(44, 40, 32, 0.55) 0%, transparent 60%);
+      opacity: 0;
+      transition: opacity 0.3s;
+      display: flex;
+      align-items: flex-end;
+      padding: 0.85rem;
+    }
+
+    .gallery-item:hover .overlay { opacity: 1; }
+
+    .gallery-item .overlay-text { font-size: 0.9rem; }
+    .gallery-item .overlay-price { font-size: 0.72rem; }
 
     /* ── Lightbox ── */
     #lightbox {
@@ -742,6 +770,101 @@
       if (e.key === 'ArrowRight')  navigate(1);
     });
 
+    // ── Painting catalog (name + price), in display order: ──
+    // Featured grid first (1–6), then Gallery grid continues (7–85)
+    const paintings = [
+      { name: "Catahoula Crawfish",            price: "$325" },
+      { name: "The Crab",                      price: "$450" },
+      { name: "The Turkey",                    price: "$300" },
+      { name: "Fish on the Coral",             price: "$375" },
+      { name: "St. John's Cathedral",          price: "$600" },
+      { name: "Preservation Hall",             price: "$550" },
+      { name: "Church on the Mountain",        price: "$300" },
+      { name: "Sweet Cane Burning",            price: "$300" },
+      { name: "The Dock",                      price: "$275" },
+      { name: "Parrot Fish",                   price: "$375" },
+      { name: "Beach Sunset",                  price: "$325" },
+      { name: "Life is Good!",                 price: "$400" },
+      { name: "A man called Yonce",            price: "$125" },
+      { name: "Shuck's Oysters!",              price: "$125" },
+      { name: "The Tavern",                    price: "$300" },
+      { name: "City Life",                     price: "$200" },
+      { name: "The Vestibule",                 price: "$250" },
+      { name: "The Winter Home",               price: "$125" },
+      { name: "A Walk with a Camel",           price: "$125" },
+      { name: "Sunny Side of Fun!",            price: "$150" },
+      { name: "Muddy Swamp",                   price: "$125" },
+      { name: "Swamp and trees",               price: "$125" },
+      { name: "Reflection",                    price: "$125" },
+      { name: "Veranda in the French Quarter", price: "$200" },
+      { name: "Loading Cane",                  price: "$150" },
+      { name: "Waiting",                       price: "$175" },
+      { name: "Going to Church",               price: "$150" },
+      { name: "\"Eggpants\"",                  price: "$250" },
+      { name: "St. Mary's Sugarmill",          price: "$200" },
+      { name: "The Fishing Village",           price: "$275" },
+      { name: "Mardi Gras",                    price: "$575" },
+      { name: "Lemon Tree by the sea",         price: "$375" },
+      { name: "A Stroll on the Boulevard",     price: "$125" },
+      { name: "The Matador",                   price: "$400" },
+      { name: "The Clothes Line",              price: "$175" },
+      { name: "A Tree in the Caymans",         price: "$125" },
+      { name: "Fixing Lunch",                  price: "$125" },
+      { name: "Mardi Gras Fun!",               price: "$125" },
+      { name: "Loving that Zydeco",            price: "$475" },
+      { name: "The Store",                     price: "$225" },
+      { name: "The Corner Spot",               price: "$175" },
+      { name: "Stairway to Heaven",            price: "$350" },
+      { name: "Home near the French Quarter",  price: "$225" },
+      { name: "The Marsh",                     price: "$150" },
+      { name: "The Day after Mardi Gras!",     price: "$200" },
+      { name: "Robert's Lounge",               price: "$300" },
+      { name: "Gumbo Time",                    price: "$400" },
+      { name: "The Castle",                    price: "$325" },
+      { name: "Blue Eyed Boy",                 price: "$125" },
+      { name: "Store in the South",            price: "$125" },
+      { name: "Man Contemplating",             price: "$125" },
+      { name: "Old City",                      price: "$100" },
+      { name: "Night in the City",             price: "$175" },
+      { name: "The Glory House",               price: "$300" },
+      { name: "Waterfront Oasis",              price: "$200" },
+      { name: "The City",                      price: "$200" },
+      { name: "The Shadows from the Oaks",     price: "$125" },
+      { name: "My First Painting",             price: "Not for sale" },
+      { name: "The Herring in the Water",      price: "$150" },
+      { name: "The Last Supper",               price: "$200" },
+      { name: "Mardi Gras in Mamou",           price: "$125" },
+      { name: "Night time on the Water",       price: "$125" },
+      { name: "BJ's",                          price: "$150" },
+      { name: "The man with the mysterious bag", price: "$150" },
+      { name: "Saint Charbel",                 price: "$175" },
+      { name: "Blessing of the Fleet",         price: "$125" },
+      { name: "Church",                        price: "$175" },
+      { name: "The Lady in Spain",             price: "$150" },
+      { name: "Rocks and Rain",                price: "$225" },
+      { name: "Beach House",                   price: "$75" },
+      { name: "The Brits",                     price: "$125" },
+      { name: "Sailing the Regatta",           price: "$125" },
+      { name: "#5 in the Harbor",              price: "$125" },
+      { name: "The Tale of the Arab",          price: "$400" },
+      { name: "2 Peas in a Pod",               price: "$275" },
+      { name: "Sugarcane Harvesting",          price: "$325" },
+      { name: "Catch the chicken!",            price: "$125" },
+      { name: "Loading Cane",                  price: "$200" },
+      { name: "Louisiana Blue Point",          price: "$175" },
+      { name: "Cane Season",                   price: "$150" },
+      { name: "New Day on the Water",          price: "$275" },
+      { name: "City Square",                   price: "$175" },
+      { name: "The End of the Day",            price: "$150" },
+      { name: "Hauling it!",                   price: "$200" },
+      { name: "Napa",                          price: "$125" },
+    ];
+
+    function overlayHTML(p) {
+      if (!p) return '<div class="overlay"></div>';
+      return `<div class="overlay"><div><span class="overlay-text">${p.name}</span><span class="overlay-price">${p.price}</span></div></div>`;
+    }
+
     // ── Render helpers ──
     function showSkeletons(grid, count) {
       for (let i = 0; i < count; i++) {
@@ -759,15 +882,16 @@
         return;
       }
       images.forEach((src, i) => {
+        const p = paintings[i];
         const card = document.createElement('div');
         card.className = 'featured-card';
-        card.innerHTML = `<img src="${src}" alt="Featured artwork ${i + 1}" loading="lazy" /><div class="overlay"></div>`;
+        card.innerHTML = `<img src="${src}" alt="${p ? p.name : `Featured artwork ${i + 1}`}" loading="lazy" />${overlayHTML(p)}`;
         card.addEventListener('click', () => openLightbox(images, i));
         grid.appendChild(card);
       });
     }
 
-    function renderGallery(images) {
+    function renderGallery(images, featuredCount) {
       const grid = document.getElementById('gallery-grid');
       grid.innerHTML = '';
       if (!images.length) {
@@ -775,9 +899,10 @@
         return;
       }
       images.forEach((src, i) => {
+        const p = paintings[featuredCount + i];
         const item = document.createElement('div');
         item.className = 'gallery-item';
-        item.innerHTML = `<img src="${src}" alt="Gallery artwork ${i + 1}" loading="lazy" />`;
+        item.innerHTML = `<img src="${src}" alt="${p ? p.name : `Gallery artwork ${i + 1}`}" loading="lazy" />${overlayHTML(p)}`;
         item.addEventListener('click', () => openLightbox(images, i));
         grid.appendChild(item);
       });
@@ -794,7 +919,7 @@
           fetchFolder('Gallery'),
         ]);
         renderFeatured(featuredImgs);
-        renderGallery(galleryImgs);
+        renderGallery(galleryImgs, featuredImgs.length);
       } catch (err) {
         console.error(err);
         document.getElementById('featured-grid').innerHTML = '<p class="load-error">Could not load images. Check the repository is public.</p>';
