@@ -342,6 +342,20 @@
       display: block;
     }
 
+    .overlay-sold {
+      display: inline-block;
+      background: var(--accent-warm);
+      color: #fff;
+      font-family: 'Mulish', sans-serif;
+      font-style: normal;
+      font-size: 0.6rem;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      padding: 0.15rem 0.45rem;
+      border-radius: 2px;
+      margin-bottom: 0.3rem;
+    }
+
     .overlay-price {
       font-family: 'Mulish', 'Avenir', 'Helvetica Neue', sans-serif;
       font-style: normal;
@@ -675,7 +689,7 @@
       </div>
       <p class="eyebrow">Watercolor &middot; Mixed Media</p>
       <h1>Stories in every<br/><em>brushstroke</em></h1>
-      <p>Capturing life, color and character through brush and watercolor. Original works inspired by people, places and quiet moments of South Louisiana.</p>
+      <p>Capturing life, color and character through brush and watercolor. Original works inspired by people, places and quiet moments of South Louisiana.<br/><strong>Items sold can be recreated as needed.</strong></p>
       <a href="#gallery" class="hero-cta">View Gallery &rarr;</a>
     </div>
   </section>
@@ -776,7 +790,7 @@
     function updateCaption() {
       const p = lbPaintings[lbIndex];
       lbTitle.textContent = p ? p.name : '';
-      lbPrice.textContent = p ? p.price : '';
+      lbPrice.textContent = p ? (p.sold ? `${p.price} · SOLD` : p.price) : '';
     }
 
     function openLightbox(images, index, paintingsForSet = []) {
@@ -815,60 +829,60 @@
 
     // ── Featured catalog (name + price), in display order ──
     const featuredPaintings = [
-      { name: "Catahoula Crawfish",            price: "$325" },
-      { name: "The Crab",                      price: "$450" },
-      { name: "The Turkey",                    price: "$300" },
-      { name: "Fish on the Coral",             price: "$375" },
+      { name: "Catahoula Crawfish",            price: "$325",  sold: true },
+      { name: "The Crab",                      price: "$450",  sold: true },
+      { name: "The Turkey",                    price: "$300",  sold: true },
+      { name: "Fish on the Coral",             price: "$375",  sold: true },
       { name: "St. John's Cathedral",          price: "$600" },
-      { name: "Preservation Hall",             price: "$550" },
-      { name: "The Last Supper",               price: "$400" },
+      { name: "Preservation Hall",             price: "$550",  sold: true },
+      { name: "The Last Supper",               price: "$400",  sold: true },
     ];
 
     // ── Gallery catalog (name + price), in display order ──
     const galleryPaintings = [
-      { name: "Church on the Mountain",        price: "$300" },
+      { name: "Church on the Mountain",        price: "$300",  sold: true },
       { name: "Sweet Cane Burning",            price: "$300" },
-      { name: "The Dock",                      price: "$275" },
+      { name: "The Dock",                      price: "$275",  sold: true },
       { name: "Parrot Fish",                   price: "$375" },
-      { name: "Beach Sunset",                  price: "$325" },
-      { name: "Life is Good!",                 price: "$400" },
-      { name: "A man called Yonce",            price: "$125" },
+      { name: "Beach Sunset",                  price: "$325",  sold: true },
+      { name: "Life is Good!",                 price: "$400",  sold: true },
+      { name: "A man called Yonce",            price: "$125",  sold: true },
       { name: "Shuck's Oysters!",              price: "$125" },
-      { name: "The Tavern",                    price: "$300" },
-      { name: "City Life",                     price: "$200" },
-      { name: "The Vestibule",                 price: "$250" },
-      { name: "The Winter Home",               price: "$125" },
-      { name: "A Walk with a Camel",           price: "$125" },
-      { name: "Sunny Side of Fun!",            price: "$150" },
+      { name: "The Tavern",                    price: "$300",  sold: true },
+      { name: "City Life",                     price: "$200",  sold: true },
+      { name: "The Vestibule",                 price: "$250",  sold: true },
+      { name: "The Winter Home",               price: "$125",  sold: true },
+      { name: "A Walk with a Camel",           price: "$125",  sold: true },
+      { name: "Sunny Side of Fun!",            price: "$150",  sold: true },
       { name: "Muddy Swamp",                   price: "$125" },
       { name: "Swamp and trees",               price: "$125" },
       { name: "Reflection",                    price: "$125" },
       { name: "Veranda in the French Quarter", price: "$200" },
       { name: "Loading Cane",                  price: "$150" },
       { name: "Waiting",                       price: "$175" },
-      { name: "Going to Church",               price: "$150" },
-      { name: "\"Eggpants\"",                  price: "$250" },
-      { name: "St. Mary's Sugarmill",          price: "$200" },
-      { name: "The Fishing Village",           price: "$275" },
+      { name: "Going to Church",               price: "$150",  sold: true },
+      { name: "\"Eggpants\"",                  price: "$250",  sold: true },
+      { name: "St. Mary's Sugarmill",          price: "$200",  sold: true },
+      { name: "The Fishing Village",           price: "$275",  sold: true },
       { name: "Mardi Gras",                    price: "$575" },
-      { name: "Lemon Tree by the sea",         price: "$375" },
-      { name: "A Stroll on the Boulevard",     price: "$125" },
-      { name: "The Matador",                   price: "$400" },
+      { name: "Lemon Tree by the sea",         price: "$375",  sold: true },
+      { name: "A Stroll on the Boulevard",     price: "$125",  sold: true },
+      { name: "The Matador",                   price: "$400",  sold: true },
       { name: "The Clothes Line",              price: "$175" },
-      { name: "A Tree in the Caymans",         price: "$125" },
+      { name: "A Tree in the Caymans",         price: "$125",  sold: true },
       { name: "Fixing Lunch",                  price: "$125" },
       { name: "Mardi Gras Fun!",               price: "$125" },
-      { name: "Loving that Zydeco",            price: "$475" },
+      { name: "Loving that Zydeco",            price: "$475",  sold: true },
       { name: "The Store",                     price: "$225" },
-      { name: "The Corner Spot",               price: "$175" },
+      { name: "The Corner Spot",               price: "$175",  sold: true },
       { name: "Stairway to Heaven",            price: "$350" },
       { name: "Home near the French Quarter",  price: "$225" },
-      { name: "The Marsh",                     price: "$150" },
-      { name: "The Day after Mardi Gras!",     price: "$200" },
+      { name: "The Marsh",                     price: "$150",  sold: true },
+      { name: "The Day after Mardi Gras!",     price: "$200",  sold: true },
       { name: "Robert's Lounge",               price: "$300" },
       { name: "Gumbo Time",                    price: "$400" },
       { name: "The Castle",                    price: "$325" },
-      { name: "Blue Eyed Boy",                 price: "$125" },
+      { name: "Blue Eyed Boy",                 price: "$125",  sold: true },
       { name: "Store in the South",            price: "$125" },
       { name: "Man Contemplating",             price: "$125" },
       { name: "Old City",                      price: "$100" },
@@ -879,24 +893,24 @@
       { name: "The Shadows from the Oaks",     price: "$125" },
       { name: "My First Painting",             price: "Not for sale" },
       { name: "The Herring in the Water",      price: "$150" },
-      { name: "The Last Supper",               price: "$200" },
-      { name: "Mardi Gras in Mamou",           price: "$125" },
+      { name: "The Last Supper",               price: "$200",  sold: true },
+      { name: "Mardi Gras in Mamou",           price: "$125",  sold: true },
       { name: "Night time on the Water",       price: "$125" },
       { name: "BJ's",                          price: "$150" },
       { name: "The man with the mysterious bag", price: "$150" },
-      { name: "Saint Charbel",                 price: "$175" },
-      { name: "Blessing of the Fleet",         price: "$125" },
-      { name: "Church",                        price: "$175" },
+      { name: "Saint Charbel",                 price: "$175",  sold: true },
+      { name: "Blessing of the Fleet",         price: "$125",  sold: true },
+      { name: "Church",                        price: "$175",  sold: true },
       { name: "The Lady in Spain",             price: "$150" },
       { name: "Rocks and Rain",                price: "$225" },
       { name: "Beach House",                   price: "$75" },
       { name: "The Brits",                     price: "$125" },
       { name: "Sailing the Regatta",           price: "$125" },
-      { name: "#5 in the Harbor",              price: "$125" },
+      { name: "#5 in the Harbor",              price: "$125",  sold: true },
       { name: "The Tale of the Arab",          price: "$400" },
       { name: "2 Peas in a Pod",               price: "$275" },
-      { name: "Sugarcane Harvesting",          price: "$325" },
-      { name: "Catch the chicken!",            price: "$125" },
+      { name: "Sugarcane Harvesting",          price: "$325",  sold: true },
+      { name: "Catch the chicken!",            price: "$125",  sold: true },
       { name: "Loading Cane",                  price: "$200" },
       { name: "Louisiana Blue Point",          price: "$175" },
       { name: "Cane Season",                   price: "$150" },
@@ -904,14 +918,15 @@
       { name: "City Square",                   price: "$175" },
       { name: "The End of the Day",            price: "$150" },
       { name: "Hauling it!",                   price: "$200" },
-      { name: "Napa",                          price: "$125" },
+      { name: "Napa",                          price: "$125",  sold: true },
       { name: "Salt Water Beauty",             price: "$300" },
       { name: "Another Fish on the Coral",     price: "$375" },
     ];
 
     function overlayHTML(p) {
       if (!p) return '<div class="overlay"></div>';
-      return `<div class="overlay"><div><span class="overlay-text">${p.name}</span><span class="overlay-price">${p.price}</span></div></div>`;
+      const soldBadge = p.sold ? '<span class="overlay-sold">SOLD</span>' : '';
+      return `<div class="overlay"><div>${soldBadge}<span class="overlay-text">${p.name}</span><span class="overlay-price">${p.price}</span></div></div>`;
     }
 
     // ── Render helpers ──
