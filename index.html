@@ -739,7 +739,13 @@
     <button class="lb-nav lb-next" aria-label="Next">&#8594;</button>
   </div>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
+    // ── Supabase ──
+    const SUPABASE_URL  = 'https://zdisbixnxegbiyexuldq.supabase.co';
+    const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpkaXNiaXhueGVnYml5ZXh1bGRxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3ODg4MzIsImV4cCI6MjA5NzM2NDgzMn0.BigwWnmFKglHjiKTVgRo1Fq_sCb4kFPGIusQS50teEI';
+    const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+
     // ── Hamburger menu ──
     const hamburger = document.getElementById('hamburger');
     const mainNav   = document.getElementById('main-nav');
@@ -748,7 +754,6 @@
       hamburger.classList.toggle('open', open);
       hamburger.setAttribute('aria-expanded', open);
     });
-    // Close nav when a link is clicked (mobile)
     mainNav.querySelectorAll('a').forEach(a => {
       a.addEventListener('click', () => {
         mainNav.classList.remove('open');
@@ -757,35 +762,14 @@
       });
     });
 
-    // ── GitHub config ──
-    const GITHUB_USER   = 'SNLabat';
-    const GITHUB_REPO   = 'LaurieBarake';
-    const GITHUB_BRANCH = 'main';
-    const IMAGE_EXTS    = new Set(['jpg', 'jpeg', 'png', 'gif', 'webp', 'avif']);
-
-    function isImage(name) {
-      return IMAGE_EXTS.has(name.split('.').pop().toLowerCase());
-    }
-
-    async function fetchFolder(folder) {
-      const url = `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${folder}?ref=${GITHUB_BRANCH}`;
-      const res = await fetch(url, { headers: { Accept: 'application/vnd.github.v3+json' } });
-      if (!res.ok) throw new Error(`GitHub API error ${res.status} for ${folder}`);
-      const files = await res.json();
-      return files
-        .filter(f => f.type === 'file' && isImage(f.name))
-        .sort((a, b) => a.name.localeCompare(b.name))
-        .map(f => f.download_url);
-    }
-
     // ── Lightbox state ──
     const lb         = document.getElementById('lightbox');
     const lbImg      = document.getElementById('lb-img');
     const lbTitle    = document.getElementById('lb-caption-title');
     const lbPrice    = document.getElementById('lb-caption-price');
-    let lbImages   = [];
-    let lbPaintings = [];
-    let lbIndex    = 0;
+    let lbImages     = [];
+    let lbPaintings  = [];
+    let lbIndex      = 0;
 
     function updateCaption() {
       const p = lbPaintings[lbIndex];
@@ -793,11 +777,11 @@
       lbPrice.textContent = p ? (p.sold ? `${p.price} · SOLD` : p.price) : '';
     }
 
-    function openLightbox(images, index, paintingsForSet = []) {
-      lbImages    = images;
-      lbPaintings = paintingsForSet;
+    function openLightbox(paintings, index) {
+      lbPaintings = paintings;
+      lbImages    = paintings.map(p => p.image_url);
       lbIndex     = index;
-      lbImg.src   = images[index];
+      lbImg.src   = lbImages[index];
       updateCaption();
       lb.classList.add('open');
       document.body.style.overflow = 'hidden';
@@ -822,114 +806,18 @@
     lb.addEventListener('click', e => { if (e.target === lb) closeLightbox(); });
     document.addEventListener('keydown', e => {
       if (!lb.classList.contains('open')) return;
-      if (e.key === 'Escape')      closeLightbox();
-      if (e.key === 'ArrowLeft')   navigate(-1);
-      if (e.key === 'ArrowRight')  navigate(1);
+      if (e.key === 'Escape')     closeLightbox();
+      if (e.key === 'ArrowLeft')  navigate(-1);
+      if (e.key === 'ArrowRight') navigate(1);
     });
 
-    // ── Featured catalog (name + price), in display order ──
-    const featuredPaintings = [
-      { name: "Catahoula Crawfish",            price: "$325",  sold: true },
-      { name: "The Crab",                      price: "$450",  sold: true },
-      { name: "The Turkey",                    price: "$300",  sold: true },
-      { name: "Fish on the Coral",             price: "$375" },
-      { name: "St. John's Cathedral",          price: "$600" },
-      { name: "Preservation Hall",             price: "$550",  sold: true },
-      { name: "The Last Supper",               price: "$400",  sold: true },
-    ];
-
-    // ── Gallery catalog (name + price), in display order ──
-    const galleryPaintings = [
-      { name: "Church on the Mountain",        price: "$300",  sold: true },
-      { name: "Sweet Cane Burning",            price: "$300" },
-      { name: "The Dock",                      price: "$275" },
-      { name: "Parrot Fish",                   price: "$375",  sold: true },
-      { name: "Beach Sunset",                  price: "$325" },
-      { name: "Life is Good!",                 price: "$400",  sold: true },
-      { name: "A man called Yonce",            price: "$125",  sold: true },
-      { name: "Shuck's Oysters!",              price: "$125" },
-      { name: "The Tavern",                    price: "$300",  sold: true },
-      { name: "City Life",                     price: "$200",  sold: true },
-      { name: "The Vestibule",                 price: "$250" },
-      { name: "The Winter Home",               price: "$125" },
-      { name: "A Walk with a Camel",           price: "$125",  sold: true },
-      { name: "Sunny Side of Fun!",            price: "$150",  sold: true },
-      { name: "Muddy Swamp",                   price: "$125" },
-      { name: "Swamp and trees",               price: "$125" },
-      { name: "Reflection",                    price: "$125" },
-      { name: "Veranda in the French Quarter", price: "$200",  sold: true },
-      { name: "Loading Cane",                  price: "$150" },
-      { name: "Waiting",                       price: "$175" },
-      { name: "Going to Church",               price: "$150" },
-      { name: "\"Eggpants\"",                  price: "$250",  sold: true },
-      { name: "St. Mary's Sugarmill",          price: "$200" },
-      { name: "The Fishing Village",           price: "$275",  sold: true },
-      { name: "Mardi Gras",                    price: "$575",  sold: true },
-      { name: "Lemon Tree by the sea",         price: "$375",  sold: true },
-      { name: "A Stroll on the Boulevard",     price: "$125" },
-      { name: "The Matador",                   price: "$400" },
-      { name: "The Clothes Line",              price: "$175",  sold: true },
-      { name: "A Tree in the Caymans",         price: "$125" },
-      { name: "Fixing Lunch",                  price: "$125" },
-      { name: "Mardi Gras Fun!",               price: "$125" },
-      { name: "Loving that Zydeco",            price: "$475" },
-      { name: "The Store",                     price: "$225",  sold: true },
-      { name: "The Corner Spot",               price: "$175" },
-      { name: "Stairway to Heaven",            price: "$350",  sold: true },
-      { name: "Home near the French Quarter",  price: "$225",  sold: true },
-      { name: "The Marsh",                     price: "$150",  sold: true },
-      { name: "The Day after Mardi Gras!",     price: "$200" },
-      { name: "Robert's Lounge",               price: "$300" },
-      { name: "Gumbo Time",                    price: "$400" },
-      { name: "The Castle",                    price: "$325",  sold: true },
-      { name: "Blue Eyed Boy",                 price: "$125" },
-      { name: "Store in the South",            price: "$125" },
-      { name: "Man Contemplating",             price: "$125" },
-      { name: "Old City",                      price: "$100" },
-      { name: "Night in the City",             price: "$175" },
-      { name: "The Glory House",               price: "$300" },
-      { name: "Waterfront Oasis",              price: "$200" },
-      { name: "The City",                      price: "$200" },
-      { name: "The Shadows from the Oaks",     price: "$125" },
-      { name: "My First Painting",             price: "Not for sale" },
-      { name: "The Herring in the Water",      price: "$150" },
-      { name: "The Last Supper",               price: "$200",  sold: true },
-      { name: "Mardi Gras in Mamou",           price: "$125" },
-      { name: "Night time on the Water",       price: "$125" },
-      { name: "BJ's",                          price: "$150" },
-      { name: "The man with the mysterious bag", price: "$150" },
-      { name: "Saint Charbel",                 price: "$175",  sold: true },
-      { name: "Blessing of the Fleet",         price: "$125" },
-      { name: "Church",                        price: "$175" },
-      { name: "The Lady in Spain",             price: "$150",  sold: true },
-      { name: "Rocks and Rain",                price: "$225" },
-      { name: "Beach House",                   price: "$75" },
-      { name: "The Brits",                     price: "$125" },
-      { name: "Sailing the Regatta",           price: "$125",  sold: true },
-      { name: "#5 in the Harbor",              price: "$125" },
-      { name: "The Tale of the Arab",          price: "$400" },
-      { name: "2 Peas in a Pod",               price: "$275",  sold: true },
-      { name: "Sugarcane Harvesting",          price: "$325" },
-      { name: "Catch the chicken!",            price: "$125" },
-      { name: "Loading Cane",                  price: "$200",  sold: true },
-      { name: "Louisiana Blue Point",          price: "$175" },
-      { name: "Cane Season",                   price: "$150" },
-      { name: "New Day on the Water",          price: "$275" },
-      { name: "City Square",                   price: "$175" },
-      { name: "The End of the Day",            price: "$150" },
-      { name: "Hauling it!",                   price: "$200" },
-      { name: "Napa",                          price: "$125",  sold: true },
-      { name: "Salt Water Beauty",             price: "$300" },
-      { name: "Another Fish on the Coral",     price: "$375" },
-    ];
-
+    // ── Overlay HTML ──
     function overlayHTML(p) {
-      if (!p) return '<div class="overlay"></div>';
       const soldBadge = p.sold ? '<span class="overlay-sold">SOLD</span>' : '';
       return `<div class="overlay"><div>${soldBadge}<span class="overlay-text">${p.name}</span><span class="overlay-price">${p.price}</span></div></div>`;
     }
 
-    // ── Render helpers ──
+    // ── Skeletons ──
     function showSkeletons(grid, count) {
       for (let i = 0; i < count; i++) {
         const el = document.createElement('div');
@@ -938,36 +826,35 @@
       }
     }
 
-    function renderFeatured(images) {
+    // ── Render ──
+    function renderFeatured(paintings) {
       const grid = document.getElementById('featured-grid');
       grid.innerHTML = '';
-      if (!images.length) {
-        grid.innerHTML = '<p class="load-error">No featured images found.</p>';
+      if (!paintings.length) {
+        grid.innerHTML = '<p class="load-error">No featured works found.</p>';
         return;
       }
-      images.forEach((src, i) => {
-        const p = featuredPaintings[i];
+      paintings.forEach((p, i) => {
         const card = document.createElement('div');
         card.className = 'featured-card';
-        card.innerHTML = `<img src="${src}" alt="${p ? p.name : `Featured artwork ${i + 1}`}" loading="lazy" />${overlayHTML(p)}`;
-        card.addEventListener('click', () => openLightbox(images, i, featuredPaintings));
+        card.innerHTML = `<img src="${p.image_url}" alt="${p.name}" loading="lazy" />${overlayHTML(p)}`;
+        card.addEventListener('click', () => openLightbox(paintings, i));
         grid.appendChild(card);
       });
     }
 
-    function renderGallery(images) {
+    function renderGallery(paintings) {
       const grid = document.getElementById('gallery-grid');
       grid.innerHTML = '';
-      if (!images.length) {
-        grid.innerHTML = '<p class="load-error">No gallery images found.</p>';
+      if (!paintings.length) {
+        grid.innerHTML = '<p class="load-error">No gallery works found.</p>';
         return;
       }
-      images.forEach((src, i) => {
-        const p = galleryPaintings[i];
+      paintings.forEach((p, i) => {
         const item = document.createElement('div');
         item.className = 'gallery-item';
-        item.innerHTML = `<img src="${src}" alt="${p ? p.name : `Gallery artwork ${i + 1}`}" loading="lazy" />${overlayHTML(p)}`;
-        item.addEventListener('click', () => openLightbox(images, i, galleryPaintings));
+        item.innerHTML = `<img src="${p.image_url}" alt="${p.name}" loading="lazy" />${overlayHTML(p)}`;
+        item.addEventListener('click', () => openLightbox(paintings, i));
         grid.appendChild(item);
       });
     }
@@ -978,16 +865,20 @@
       showSkeletons(document.getElementById('gallery-grid'), 12);
 
       try {
-        const [featuredImgs, galleryImgs] = await Promise.all([
-          fetchFolder('Featured'),
-          fetchFolder('Gallery'),
-        ]);
-        renderFeatured(featuredImgs);
-        renderGallery(galleryImgs);
+        const { data, error } = await sb
+          .from('paintings')
+          .select('*')
+          .order('display_order');
+        if (error) throw error;
+
+        const featured = data.filter(p => p.featured);
+        const gallery  = data.filter(p => !p.featured);
+        renderFeatured(featured);
+        renderGallery(gallery);
       } catch (err) {
         console.error(err);
-        document.getElementById('featured-grid').innerHTML = '<p class="load-error">Could not load images. Check the repository is public.</p>';
-        document.getElementById('gallery-grid').innerHTML  = '<p class="load-error">Could not load images. Check the repository is public.</p>';
+        document.getElementById('featured-grid').innerHTML = '<p class="load-error">Could not load paintings.</p>';
+        document.getElementById('gallery-grid').innerHTML  = '<p class="load-error">Could not load paintings.</p>';
       }
     })();
   </script>

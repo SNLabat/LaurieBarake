@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin — Laurie Barake Fine Art</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500&family=Mulish:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg:          #f5f1e8;
+      --bg-alt:      #ede6d6;
+      --surface:     #e8e1cf;
+      --border:      #ddd3bd;
+      --text:        #2c2820;
+      --muted:       #837a68;
+      --accent:      #7c8470;
+      --accent-deep: #5c624f;
+      --accent-warm: #c0805e;
+      --danger:      #b94040;
+    }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Mulish', sans-serif;
+      font-size: 0.9rem;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+    }
+
+    /* ── Auth screen ── */
+    #auth-screen {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg-alt);
+    }
+    .auth-box {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 2.5rem 2.5rem 2rem;
+      width: 100%;
+      max-width: 380px;
+      box-shadow: 0 8px 32px rgba(44,40,32,0.08);
+    }
+    .auth-box h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 400;
+      font-size: 1.9rem;
+      color: var(--text);
+      margin-bottom: 0.3rem;
+    }
+    .auth-box p { color: var(--muted); font-size: 0.8rem; letter-spacing: 0.06em; margin-bottom: 1.8rem; }
+    .auth-error { color: var(--danger); font-size: 0.8rem; margin-bottom: 1rem; display: none; }
+
+    /* ── Admin layout ── */
+    #admin-screen { display: none; }
+    .admin-header {
+      position: sticky; top: 0; z-index: 50;
+      background: rgba(245,241,232,0.95);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 2rem;
+      height: 64px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .admin-header-brand {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.3rem; font-weight: 400;
+      color: var(--text);
+    }
+    .admin-header-brand span {
+      font-family: 'Mulish', sans-serif;
+      font-size: 0.62rem; font-weight: 600;
+      letter-spacing: 0.28em; text-transform: uppercase;
+      color: var(--accent); margin-left: 0.6rem;
+    }
+    .admin-body {
+      display: grid;
+      grid-template-columns: 340px 1fr;
+      gap: 0;
+      min-height: calc(100vh - 64px);
+    }
+
+    /* ── Sidebar (add/edit form) ── */
+    .sidebar {
+      border-right: 1px solid var(--border);
+      padding: 1.75rem 1.5rem;
+      position: sticky; top: 64px;
+      height: calc(100vh - 64px);
+      overflow-y: auto;
+      background: var(--bg-alt);
+    }
+    .sidebar h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.3rem; font-weight: 400;
+      margin-bottom: 1.25rem;
+      color: var(--text);
+    }
+
+    /* ── Form controls ── */
+    .field { margin-bottom: 1rem; }
+    .field label {
+      display: block;
+      font-size: 0.7rem; font-weight: 700;
+      letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--muted); margin-bottom: 0.35rem;
+    }
+    .field input[type="text"],
+    .field input[type="number"],
+    .field select {
+      width: 100%;
+      padding: 0.55rem 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Mulish', sans-serif;
+      font-size: 0.88rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .field input:focus, .field select:focus { border-color: var(--accent); }
+
+    /* Image upload zone */
+    .upload-zone {
+      border: 2px dashed var(--border);
+      border-radius: 4px;
+      padding: 1.2rem;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+      background: var(--bg);
+      position: relative;
+    }
+    .upload-zone:hover, .upload-zone.dragover { border-color: var(--accent); background: var(--surface); }
+    .upload-zone input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+    .upload-zone p { font-size: 0.78rem; color: var(--muted); pointer-events: none; }
+    .upload-zone p strong { display: block; font-size: 0.85rem; color: var(--accent); margin-bottom: 0.2rem; }
+    #upload-preview {
+      width: 100%; margin-top: 0.75rem;
+      border-radius: 3px; display: none;
+      max-height: 160px; object-fit: cover;
+    }
+
+    .toggle-row {
+      display: flex; gap: 1rem; margin-bottom: 1rem;
+    }
+    .toggle-item {
+      display: flex; align-items: center; gap: 0.5rem;
+      font-size: 0.82rem; color: var(--text); cursor: pointer;
+    }
+    .toggle-item input[type="checkbox"] { width: 16px; height: 16px; accent-color: var(--accent); cursor: pointer; }
+
+    .form-actions { display: flex; gap: 0.6rem; margin-top: 1.25rem; }
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem;
+      padding: 0.6rem 1.2rem;
+      border: none; border-radius: 3px;
+      font-family: 'Mulish', sans-serif;
+      font-size: 0.72rem; font-weight: 700;
+      letter-spacing: 0.18em; text-transform: uppercase;
+      cursor: pointer; transition: background 0.2s, color 0.2s;
+    }
+    .btn-primary { background: var(--accent); color: #fff; flex: 1; }
+    .btn-primary:hover { background: var(--accent-deep); }
+    .btn-primary:disabled { background: var(--surface); color: var(--muted); cursor: not-allowed; }
+    .btn-secondary { background: var(--surface); color: var(--muted); }
+    .btn-secondary:hover { background: var(--border); color: var(--text); }
+    .btn-danger { background: transparent; color: var(--danger); border: 1px solid var(--danger); }
+    .btn-danger:hover { background: var(--danger); color: #fff; }
+    .btn-logout { background: transparent; color: var(--muted); border: 1px solid var(--border); font-size: 0.68rem; padding: 0.45rem 0.9rem; }
+    .btn-logout:hover { border-color: var(--danger); color: var(--danger); }
+
+    .form-status { font-size: 0.78rem; margin-top: 0.6rem; min-height: 1.2em; }
+    .form-status.ok { color: var(--accent-deep); }
+    .form-status.err { color: var(--danger); }
+
+    /* ── Main panel ── */
+    .main-panel { padding: 1.75rem 2rem; }
+    .main-panel-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 1.5rem;
+    }
+    .main-panel-header h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.4rem; font-weight: 400; color: var(--text);
+    }
+    .tabs { display: flex; gap: 0; border-bottom: 1px solid var(--border); margin-bottom: 1.5rem; }
+    .tab {
+      padding: 0.6rem 1.2rem;
+      font-size: 0.72rem; font-weight: 700;
+      letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--muted); cursor: pointer;
+      border-bottom: 2px solid transparent; margin-bottom: -1px;
+      transition: color 0.2s, border-color 0.2s;
+    }
+    .tab.active { color: var(--accent-deep); border-bottom-color: var(--accent-warm); }
+    .tab:hover:not(.active) { color: var(--text); }
+
+    /* ── Painting cards grid ── */
+    .paintings-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 1rem;
+    }
+    .painting-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      overflow: hidden;
+      transition: box-shadow 0.2s;
+      cursor: grab;
+      position: relative;
+    }
+    .painting-card:active { cursor: grabbing; }
+    .painting-card.dragging { opacity: 0.4; box-shadow: 0 8px 24px rgba(44,40,32,0.18); }
+    .painting-card.drag-over { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent); }
+    .painting-card img {
+      width: 100%; aspect-ratio: 1/1;
+      object-fit: cover; display: block;
+    }
+    .painting-card-body { padding: 0.6rem 0.65rem 0.5rem; }
+    .painting-card-name {
+      font-size: 0.78rem; font-weight: 600;
+      color: var(--text); margin-bottom: 0.2rem;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .painting-card-price { font-size: 0.72rem; color: var(--muted); }
+    .painting-card-badges {
+      display: flex; gap: 0.3rem; flex-wrap: wrap;
+      margin-top: 0.35rem;
+    }
+    .badge {
+      font-size: 0.58rem; font-weight: 700;
+      letter-spacing: 0.18em; text-transform: uppercase;
+      padding: 0.15rem 0.4rem; border-radius: 2px;
+    }
+    .badge-sold { background: var(--accent-warm); color: #fff; }
+    .badge-featured { background: var(--accent); color: #fff; }
+    .painting-card-actions {
+      display: flex; gap: 0.4rem;
+      padding: 0.4rem 0.65rem 0.6rem;
+      border-top: 1px solid var(--border);
+    }
+    .card-btn {
+      flex: 1; padding: 0.3rem;
+      border: none; border-radius: 2px;
+      font-family: 'Mulish', sans-serif;
+      font-size: 0.65rem; font-weight: 700;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      cursor: pointer; transition: background 0.15s;
+    }
+    .card-btn-edit { background: var(--surface); color: var(--accent-deep); border: 1px solid var(--border); }
+    .card-btn-edit:hover { background: var(--bg-alt); }
+    .card-btn-sold { background: var(--surface); color: var(--muted); border: 1px solid var(--border); }
+    .card-btn-sold.is-sold { background: rgba(192,128,94,0.12); color: var(--accent-warm); border-color: var(--accent-warm); }
+    .card-btn-sold:hover { background: rgba(192,128,94,0.18); color: var(--accent-warm); }
+    .card-btn-del { background: var(--surface); color: var(--danger); border: 1px solid var(--border); }
+    .card-btn-del:hover { background: var(--danger); color: #fff; }
+
+    .drag-hint {
+      font-size: 0.7rem; color: var(--muted);
+      margin-bottom: 1rem; display: flex; align-items: center; gap: 0.4rem;
+    }
+    .drag-hint svg { width: 14px; height: 14px; opacity: 0.5; }
+
+    .empty-state {
+      grid-column: 1/-1; text-align: center;
+      padding: 3rem; color: var(--muted); font-size: 0.9rem;
+    }
+
+    /* ── Shared form inputs ── */
+    input[type="text"], input[type="email"], input[type="password"], input[type="number"] {
+      width: 100%;
+      padding: 0.6rem 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Mulish', sans-serif;
+      font-size: 0.88rem;
+      outline: none;
+      transition: border-color 0.2s;
+      margin-bottom: 0;
+    }
+    input:focus { border-color: var(--accent); }
+
+    .spinner {
+      display: inline-block; width: 14px; height: 14px;
+      border: 2px solid rgba(255,255,255,0.4);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    @media (max-width: 900px) {
+      .admin-body { grid-template-columns: 1fr; }
+      .sidebar { position: static; height: auto; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Auth screen -->
+<div id="auth-screen">
+  <div class="auth-box">
+    <h1>Laurie Barake</h1>
+    <p>Admin Panel · Fine Art</p>
+    <div class="auth-error" id="auth-error"></div>
+    <div class="field">
+      <label>Email</label>
+      <input type="text" id="auth-email" value="art@lauriebarake.com" />
+    </div>
+    <div class="field">
+      <label>Password</label>
+      <input type="password" id="auth-password" placeholder="Enter password" />
+    </div>
+    <button class="btn btn-primary" id="login-btn" style="width:100%;margin-top:0.5rem">Sign In</button>
+  </div>
+</div>
+
+<!-- Admin screen -->
+<div id="admin-screen">
+  <header class="admin-header">
+    <div class="admin-header-brand">Laurie Barake <span>Admin</span></div>
+    <div style="display:flex;gap:0.75rem;align-items:center">
+      <a href="index.html" class="btn btn-secondary" style="font-size:0.68rem;padding:0.45rem 0.9rem">View Site</a>
+      <button class="btn btn-logout" id="logout-btn">Sign Out</button>
+    </div>
+  </header>
+
+  <div class="admin-body">
+
+    <!-- Sidebar: Add / Edit form -->
+    <aside class="sidebar">
+      <h2 id="form-title">Add New Painting</h2>
+
+      <div class="field">
+        <label>Image</label>
+        <div class="upload-zone" id="upload-zone">
+          <input type="file" id="file-input" accept="image/*" />
+          <p><strong>Click or drag to upload</strong>JPEG, PNG, WEBP</p>
+          <img id="upload-preview" alt="preview" />
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Title</label>
+        <input type="text" id="f-name" placeholder="e.g. Bayou at Dusk" />
+      </div>
+      <div class="field">
+        <label>Price</label>
+        <input type="text" id="f-price" placeholder="e.g. $325" />
+      </div>
+
+      <div class="toggle-row">
+        <label class="toggle-item">
+          <input type="checkbox" id="f-sold" /> Sold
+        </label>
+        <label class="toggle-item">
+          <input type="checkbox" id="f-featured" /> Featured
+        </label>
+      </div>
+
+      <div class="form-actions">
+        <button class="btn btn-primary" id="save-btn">Save Painting</button>
+        <button class="btn btn-secondary" id="cancel-btn" style="display:none">Cancel</button>
+      </div>
+      <p class="form-status" id="form-status"></p>
+
+      <div id="delete-section" style="display:none;margin-top:1.5rem;padding-top:1rem;border-top:1px solid var(--border)">
+        <button class="btn btn-danger" id="delete-btn" style="width:100%">Delete This Painting</button>
+      </div>
+    </aside>
+
+    <!-- Main panel: gallery grid -->
+    <main class="main-panel">
+      <div class="main-panel-header">
+        <h2 id="panel-title">All Paintings</h2>
+        <span id="count-badge" style="font-size:0.75rem;color:var(--muted)"></span>
+      </div>
+
+      <div class="tabs">
+        <div class="tab active" data-tab="gallery">Gallery</div>
+        <div class="tab" data-tab="featured">Featured</div>
+      </div>
+
+      <div class="drag-hint">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="5" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="19" r="1"/><circle cx="15" cy="5" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="19" r="1"/></svg>
+        Drag cards to reorder — changes save automatically
+      </div>
+
+      <div class="paintings-grid" id="paintings-grid"></div>
+    </main>
+
+  </div>
+</div>
+
+<script>
+  const SUPABASE_URL    = 'https://zdisbixnxegbiyexuldq.supabase.co';
+  const SUPABASE_ANON   = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpkaXNiaXhueGVnYml5ZXh1bGRxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3ODg4MzIsImV4cCI6MjA5NzM2NDgzMn0.BigwWnmFKglHjiKTVgRo1Fq_sCb4kFPGIusQS50teEI';
+  const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+
+  let currentTab   = 'gallery';
+  let editingId    = null;
+  let pendingFile  = null;
+  let paintings    = [];
+  let dragSrcIdx   = null;
+
+  // ── Auth ──
+  async function checkSession() {
+    const { data: { session } } = await sb.auth.getSession();
+    if (session) showAdmin();
+  }
+
+  document.getElementById('auth-password').addEventListener('keydown', e => {
+    if (e.key === 'Enter') login();
+  });
+
+  document.getElementById('login-btn').addEventListener('click', login);
+  document.getElementById('logout-btn').addEventListener('click', async () => {
+    await sb.auth.signOut();
+    location.reload();
+  });
+
+  async function login() {
+    const email    = document.getElementById('auth-email').value.trim();
+    const password = document.getElementById('auth-password').value;
+    const errEl    = document.getElementById('auth-error');
+    const btn      = document.getElementById('login-btn');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span>';
+    errEl.style.display = 'none';
+    const { error } = await sb.auth.signInWithPassword({ email, password });
+    if (error) {
+      errEl.textContent = 'Incorrect email or password.';
+      errEl.style.display = 'block';
+      btn.disabled = false;
+      btn.textContent = 'Sign In';
+    } else {
+      showAdmin();
+    }
+  }
+
+  function showAdmin() {
+    document.getElementById('auth-screen').style.display = 'none';
+    document.getElementById('admin-screen').style.display = 'block';
+    loadPaintings();
+  }
+
+  // ── Load paintings ──
+  async function loadPaintings() {
+    const { data } = await sb.from('paintings')
+      .select('*')
+      .order('display_order');
+    paintings = data || [];
+    renderGrid();
+  }
+
+  // ── Tabs ──
+  document.querySelectorAll('.tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      currentTab = tab.dataset.tab;
+      renderGrid();
+    });
+  });
+
+  // ── Render grid ──
+  function renderGrid() {
+    const grid = document.getElementById('paintings-grid');
+    const list = paintings.filter(p => currentTab === 'featured' ? p.featured : !p.featured);
+    document.getElementById('count-badge').textContent = `${list.length} painting${list.length !== 1 ? 's' : ''}`;
+    document.getElementById('panel-title').textContent = currentTab === 'featured' ? 'Featured Paintings' : 'Gallery Paintings';
+
+    if (!list.length) {
+      grid.innerHTML = '<div class="empty-state">No paintings yet. Add one using the form.</div>';
+      return;
+    }
+
+    grid.innerHTML = '';
+    list.forEach((p, i) => {
+      const card = document.createElement('div');
+      card.className = 'painting-card';
+      card.draggable = true;
+      card.dataset.id = p.id;
+      card.dataset.idx = i;
+
+      card.innerHTML = `
+        <img src="${p.image_url}" alt="${p.name}" loading="lazy" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 1 1%22><rect fill=%22%23e8e1cf%22/></svg>'" />
+        <div class="painting-card-body">
+          <div class="painting-card-name" title="${p.name}">${p.name}</div>
+          <div class="painting-card-price">${p.price}</div>
+          <div class="painting-card-badges">
+            ${p.sold     ? '<span class="badge badge-sold">Sold</span>' : ''}
+            ${p.featured ? '<span class="badge badge-featured">Featured</span>' : ''}
+          </div>
+        </div>
+        <div class="painting-card-actions">
+          <button class="card-btn card-btn-edit" data-id="${p.id}">Edit</button>
+          <button class="card-btn card-btn-sold ${p.sold ? 'is-sold' : ''}" data-id="${p.id}">${p.sold ? 'Unsell' : 'Sold'}</button>
+          <button class="card-btn card-btn-del" data-id="${p.id}">Del</button>
+        </div>`;
+
+      // Drag events
+      card.addEventListener('dragstart', e => {
+        dragSrcIdx = i;
+        card.classList.add('dragging');
+        e.dataTransfer.effectAllowed = 'move';
+      });
+      card.addEventListener('dragend', () => card.classList.remove('dragging'));
+      card.addEventListener('dragover', e => {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'move';
+        card.classList.add('drag-over');
+      });
+      card.addEventListener('dragleave', () => card.classList.remove('drag-over'));
+      card.addEventListener('drop', e => {
+        e.preventDefault();
+        card.classList.remove('drag-over');
+        if (dragSrcIdx === null || dragSrcIdx === i) return;
+        reorder(dragSrcIdx, i);
+        dragSrcIdx = null;
+      });
+
+      // Button events
+      card.querySelector('.card-btn-edit').addEventListener('click', () => startEdit(p.id));
+      card.querySelector('.card-btn-sold').addEventListener('click', () => toggleSold(p.id, p.sold));
+      card.querySelector('.card-btn-del').addEventListener('click', () => deletePainting(p.id, p.name, p.image_path));
+
+      grid.appendChild(card);
+    });
+  }
+
+  // ── Reorder ──
+  async function reorder(fromIdx, toIdx) {
+    const list = paintings.filter(p => currentTab === 'featured' ? p.featured : !p.featured);
+    const moved = list.splice(fromIdx, 1)[0];
+    list.splice(toIdx, 0, moved);
+
+    // Reassign display_order for this group
+    const updates = list.map((p, i) => sb.from('paintings').update({ display_order: i }).eq('id', p.id));
+    await Promise.all(updates);
+
+    // Update local state
+    list.forEach((p, i) => { p.display_order = i; });
+    paintings = paintings
+      .filter(p => currentTab === 'featured' ? !p.featured : p.featured)
+      .concat(list)
+      .sort((a, b) => a.display_order - b.display_order);
+    renderGrid();
+  }
+
+  // ── Toggle sold ──
+  async function toggleSold(id, currentSold) {
+    await sb.from('paintings').update({ sold: !currentSold }).eq('id', id);
+    const p = paintings.find(x => x.id === id);
+    if (p) p.sold = !currentSold;
+    renderGrid();
+  }
+
+  // ── File upload preview ──
+  const fileInput   = document.getElementById('file-input');
+  const preview     = document.getElementById('upload-preview');
+  const uploadZone  = document.getElementById('upload-zone');
+
+  fileInput.addEventListener('change', () => {
+    const file = fileInput.files[0];
+    if (!file) return;
+    pendingFile = file;
+    preview.src = URL.createObjectURL(file);
+    preview.style.display = 'block';
+    uploadZone.querySelector('p').style.display = 'none';
+  });
+  uploadZone.addEventListener('dragover', e => { e.preventDefault(); uploadZone.classList.add('dragover'); });
+  uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('dragover'));
+  uploadZone.addEventListener('drop', e => {
+    e.preventDefault(); uploadZone.classList.remove('dragover');
+    const file = e.dataTransfer.files[0];
+    if (!file || !file.type.startsWith('image/')) return;
+    pendingFile = file;
+    preview.src = URL.createObjectURL(file);
+    preview.style.display = 'block';
+    uploadZone.querySelector('p').style.display = 'none';
+  });
+
+  // ── Save painting ──
+  document.getElementById('save-btn').addEventListener('click', savePainting);
+  document.getElementById('cancel-btn').addEventListener('click', resetForm);
+
+  async function savePainting() {
+    const name     = document.getElementById('f-name').value.trim();
+    const price    = document.getElementById('f-price').value.trim();
+    const sold     = document.getElementById('f-sold').checked;
+    const featured = document.getElementById('f-featured').checked;
+    const statusEl = document.getElementById('form-status');
+    const btn      = document.getElementById('save-btn');
+
+    if (!name || !price) { setStatus('Please fill in title and price.', 'err'); return; }
+    if (!editingId && !pendingFile) { setStatus('Please select an image.', 'err'); return; }
+
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span> Saving…';
+
+    try {
+      let image_url, image_path;
+
+      if (pendingFile) {
+        const ext  = pendingFile.name.split('.').pop();
+        const path = `${Date.now()}-${name.toLowerCase().replace(/[^a-z0-9]/g,'-')}.${ext}`;
+        const { error: upErr } = await sb.storage.from('paintings').upload(path, pendingFile, { upsert: true });
+        if (upErr) throw upErr;
+        const { data: urlData } = sb.storage.from('paintings').getPublicUrl(path);
+        image_url  = urlData.publicUrl;
+        image_path = path;
+      }
+
+      if (editingId) {
+        const update = { name, price, sold, featured };
+        if (image_url) { update.image_url = image_url; update.image_path = image_path; }
+        const { error } = await sb.from('paintings').update(update).eq('id', editingId);
+        if (error) throw error;
+        setStatus('Painting updated!', 'ok');
+      } else {
+        const list    = paintings.filter(p => featured ? p.featured : !p.featured);
+        const order   = list.length;
+        const { error } = await sb.from('paintings')
+          .insert({ name, price, sold, featured, display_order: order, image_url, image_path });
+        if (error) throw error;
+        setStatus('Painting added!', 'ok');
+      }
+
+      await loadPaintings();
+      resetForm();
+    } catch (err) {
+      setStatus(err.message || 'Something went wrong.', 'err');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = editingId ? 'Save Changes' : 'Save Painting';
+    }
+  }
+
+  // ── Edit ──
+  function startEdit(id) {
+    const p = paintings.find(x => x.id === id);
+    if (!p) return;
+    editingId = id;
+    document.getElementById('f-name').value      = p.name;
+    document.getElementById('f-price').value     = p.price;
+    document.getElementById('f-sold').checked    = p.sold;
+    document.getElementById('f-featured').checked = p.featured;
+    preview.src = p.image_url;
+    preview.style.display = 'block';
+    uploadZone.querySelector('p').style.display = 'none';
+    document.getElementById('form-title').textContent = 'Edit Painting';
+    document.getElementById('save-btn').textContent   = 'Save Changes';
+    document.getElementById('cancel-btn').style.display = 'inline-flex';
+    document.getElementById('delete-section').style.display = 'block';
+    document.getElementById('form-status').textContent = '';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    document.querySelector('.sidebar').scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // ── Delete ──
+  document.getElementById('delete-btn').addEventListener('click', () => {
+    if (!editingId) return;
+    const p = paintings.find(x => x.id === editingId);
+    if (p) deletePainting(p.id, p.name, p.image_path);
+  });
+
+  async function deletePainting(id, name, imagePath) {
+    if (!confirm(`Delete "${name}"? This cannot be undone.`)) return;
+    await sb.from('paintings').delete().eq('id', id);
+    if (imagePath && !imagePath.startsWith('github/')) {
+      await sb.storage.from('paintings').remove([imagePath]);
+    }
+    if (editingId === id) resetForm();
+    await loadPaintings();
+  }
+
+  // ── Reset form ──
+  function resetForm() {
+    editingId  = null;
+    pendingFile = null;
+    document.getElementById('f-name').value        = '';
+    document.getElementById('f-price').value       = '';
+    document.getElementById('f-sold').checked      = false;
+    document.getElementById('f-featured').checked  = false;
+    fileInput.value = '';
+    preview.style.display = 'none';
+    preview.src = '';
+    uploadZone.querySelector('p').style.display = 'block';
+    document.getElementById('form-title').textContent    = 'Add New Painting';
+    document.getElementById('save-btn').textContent      = 'Save Painting';
+    document.getElementById('cancel-btn').style.display  = 'none';
+    document.getElementById('delete-section').style.display = 'none';
+    document.getElementById('form-status').textContent   = '';
+  }
+
+  function setStatus(msg, type) {
+    const el = document.getElementById('form-status');
+    el.textContent = msg;
+    el.className = `form-status ${type}`;
+  }
+
+  checkSession();
+</script>
+</body>
+</html>
